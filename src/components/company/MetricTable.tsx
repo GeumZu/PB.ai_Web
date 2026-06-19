@@ -69,13 +69,13 @@ export default function MetricTable({ rows }: { rows: MetricRow[] }) {
                 <div
                   key={sub}
                   className="flex items-center"
-                  style={{ borderBottom: "1px solid #f3f3f3", padding: "12px 0", background: "#fafbfc" }}
+                  style={{ borderBottom: "1px solid #f3f3f3", height: 40, background: "#fafbfc" }}
                 >
                   <div className="flex items-center" style={{ flex: 2, paddingLeft: 16 }}>
-                    <span style={{ fontSize: 14, color: "#6b6d6f" }}>{sub}</span>
+                    <span style={{ fontSize: 14, color: "#6b6d6f", whiteSpace: "nowrap" }}>{sub}</span>
                   </div>
                   {[0, 1, 2].map((c) => (
-                    <div key={c} style={{ flex: 1, textAlign: "center", fontSize: 14, color: "#6b6d6f" }}>
+                    <div key={c} style={{ flex: 1, textAlign: "center", fontSize: 14, color: "#6b6d6f", whiteSpace: "nowrap" }}>
                       {SUBROW_AMOUNTS[i] ?? SUBROW_AMOUNTS[0]}
                     </div>
                   ))}
