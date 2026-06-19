@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import Providers from "./providers";
 
 export const metadata: Metadata = {
   title: "PB.ai - 기업 분석 AI",
@@ -14,7 +15,7 @@ export default function RootLayout({
   return (
     <html lang="ko">
       <body className="antialiased" style={{ height: "100dvh", overflow: "hidden" }}>
-        {children}
+        <Providers>{children}</Providers>
       </body>
     </html>
   );
