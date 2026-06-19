@@ -39,7 +39,7 @@ function formatWon(value: number) {
 interface TipEntry { name?: string; value?: number; color?: string; }
 interface TipProps { active?: boolean; payload?: TipEntry[]; label?: string; }
 
-// 호버 툴팁: 반투명(50%, 뒤 비침) + corner radius 8, 기간/스와치/금액 형식
+// 호버 툴팁 (Figma Frame 1260: pad 8, gap 4, r8, 반투명 50%)
 function ChartTooltip({ active, payload, label }: TipProps) {
   if (!active || !payload || payload.length === 0) return null;
   return (
@@ -49,20 +49,19 @@ function ChartTooltip({ active, payload, label }: TipProps) {
         backgroundColor: "rgba(255, 255, 255, 0.5)",
         backdropFilter: "blur(3px)",
         WebkitBackdropFilter: "blur(3px)",
-        border: "1px solid rgba(232, 232, 232, 0.6)",
         boxShadow: "0 4px 16px rgba(0, 0, 0, 0.1)",
-        padding: "14px 18px",
-        minWidth: 180,
+        padding: 8,
+        display: "flex",
+        flexDirection: "column",
+        gap: 4,
       }}
     >
-      <p style={{ fontSize: 13, color: "#8c8c8c", marginBottom: 12 }}>{formatPeriod(label ?? "")}</p>
+      <span style={{ fontSize: 12, color: "#58595b" }}>{formatPeriod(label ?? "")}</span>
       {payload.map((p, i) => (
-        <div key={i} className="flex items-center" style={{ gap: 10, marginTop: i > 0 ? 6 : 0 }}>
-          <span style={{ width: 10, height: 10, borderRadius: 2, background: p.color, flexShrink: 0 }} />
-          <span style={{ fontSize: 15, color: "#191b1c" }}>{p.name}</span>
-          <span style={{ fontSize: 15, fontWeight: 500, color: "#191b1c", marginLeft: 8 }}>
-            {formatWon(Number(p.value))}
-          </span>
+        <div key={i} className="flex items-center" style={{ gap: 6 }}>
+          <span style={{ width: 9, height: 9, borderRadius: 2, background: p.color, flexShrink: 0 }} />
+          <span style={{ fontSize: 13, color: "#58595b" }}>{p.name}</span>
+          <span style={{ fontSize: 13, color: "#191b1c", marginLeft: 4 }}>{formatWon(Number(p.value))}</span>
         </div>
       ))}
     </div>
