@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { MessageSquare } from "lucide-react";
+import { Plus } from "lucide-react";
 
 // ── 섹션 제목 (번호 + 호버 색상 + 클릭 시 설명 토글) ──────
 export function SectionTitle({
@@ -92,29 +92,38 @@ export function ScoreBar({ score }: { score: number }) {
   );
 }
 
-// ── New chat 우측 플로팅 버튼 ─────────────────────────────
+// ── New chat 우측 플로팅 버튼 (Figma: 52×237, 왼쪽 r69) ────
 export function ChatButton() {
   return (
     <div
-      className="fixed flex flex-col items-center justify-center gap-3 cursor-pointer"
+      className="fixed flex flex-col items-center cursor-pointer"
       style={{
         right: 0, top: "50%", transform: "translateY(-50%)",
         width: 52, height: 237,
         background: "#64a6fa",
-        borderRadius: "8px 0 0 8px",
+        borderRadius: "69px 0 0 69px",
+        justifyContent: "center",
+        gap: 8,
         zIndex: 30,
       }}
     >
-      <MessageSquare size={18} color="#fff" />
-      <span
-        style={{
-          fontSize: 15, fontWeight: 500, color: "#fff",
-          writingMode: "vertical-rl", textOrientation: "mixed",
-          letterSpacing: 2,
-        }}
-      >
-        New chat
-      </span>
+      {/* New chat: 세로 텍스트(아래→위) */}
+      <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <span
+          style={{
+            transform: "rotate(-90deg)",
+            whiteSpace: "nowrap",
+            fontSize: 17,
+            fontWeight: 500,
+            color: "#fff",
+            lineHeight: 1,
+          }}
+        >
+          New chat
+        </span>
+      </div>
+      {/* Plus 아이콘: 하단 */}
+      <Plus size={24} color="#fff" strokeWidth={2} style={{ marginBottom: 28 }} />
     </div>
   );
 }
