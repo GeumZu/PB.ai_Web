@@ -49,6 +49,80 @@
 }
 
 :root {
+  /* ════════════════════════════════════════════════════════
+     PB.ai 디자인 시스템 (Figma Foundation)
+     ════════════════════════════════════════════════════════ */
+
+  /* ── Primary (기본 블루) ── */
+  --primary-50:  #e5f2fe;
+  --primary-100: #c2defe;
+  --primary-200: #9dcbfd;
+  --primary-300: #7ab6fb;
+  --primary-400: #64a6fa;
+  --primary-500: #5797f7; /* main */
+  --primary-600: #5389e8;
+  --primary-700: #4d76d4;
+  --primary-800: #4865c1;
+  --primary-900: #3f46a1;
+
+  /* ── Gray (뉴트럴) ── */
+  --gray-50:  #f7f9fb;
+  --gray-100: #f0f2f4;
+  --gray-200: #e7e9eb;
+  --gray-300: #d7d9db;
+  --gray-400: #b3b5b7;
+  --gray-500: #939597;
+  --gray-600: #6b6d6f;
+  --gray-700: #58595b;
+  --gray-800: #393b3c;
+  --gray-900: #191b1c;
+
+  /* ── Safe (안전 - 인디고/블루) ── */
+  --safe-50:  #e8e9ff;
+  --safe-100: #c5c8ff;
+  --safe-200: #9ca4ff;
+  --safe-300: #6d80ff;
+  --safe-400: #4261ff;
+  --safe-500: #0042fb; /* main */
+  --safe-600: #0039ef;
+  --safe-700: #002ce3;
+  --safe-800: #001ed8;
+  --safe-900: #0000bf;
+
+  /* ── Danger (위험 - 레드) ── */
+  --danger-50:  #ffe9eb;
+  --danger-100: #ffc8cb;
+  --danger-200: #f7918c;
+  --danger-300: #ee655f;
+  --danger-400: #f63d34;
+  --danger-500: #f92308;
+  --danger-600: #eb0d0d; /* main */
+  --danger-700: #da0008;
+  --danger-800: #cd0000;
+  --danger-900: #bf0000;
+
+  /* ── Warning (경고 - 옐로우/오렌지) ── */
+  --warning-50:  #fff8e1;
+  --warning-100: #ffecb3;
+  --warning-200: #ffe082;
+  --warning-300: #ffd54f;
+  --warning-400: #ffca29;
+  --warning-500: #ffc109;
+  --warning-600: #ffb302;
+  --warning-700: #ffa001;
+  --warning-800: #ff8f01;
+  --warning-900: #ff7000;
+
+  /* ── Graph 노드 컬러 ── */
+  --graph-1: #6f86fc;
+  --graph-2: #ff45a5;
+  --graph-3: #fbb52d;
+  --graph-4: #0d6eff;
+  --graph-5: #f63d34;
+
+  /* ════════════════════════════════════════════════════════
+     시맨틱 토큰 (shadcn 호환)
+     ════════════════════════════════════════════════════════ */
   --background: #ffffff;
   --foreground: #191b1c;
   --card: #ffffff;
@@ -57,30 +131,30 @@
   --popover-foreground: #191b1c;
   --primary: #191b1c;
   --primary-foreground: #ffffff;
-  --secondary: #f5f5f5;
+  --secondary: #f7f9fb;
   --secondary-foreground: #191b1c;
-  --muted: #f5f5f5;
-  --muted-foreground: #8c8c8c;
-  --accent: #f0f0f0;
+  --muted: #f0f2f4;
+  --muted-foreground: #6b6d6f;
+  --accent: #f0f2f4;
   --accent-foreground: #191b1c;
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: #e8e8e8;
-  --input: #e8e8e8;
-  --ring: #b0b0b0;
-  --chart-1: #4a90e2;
-  --chart-2: #7ed321;
-  --chart-3: #f5a623;
-  --chart-4: #d0021b;
-  --chart-5: #9013fe;
+  --destructive: #eb0d0d;
+  --border: #e7e9eb;
+  --input: #d7d9db;
+  --ring: #5797f7;
+  --chart-1: #6f86fc;
+  --chart-2: #ff45a5;
+  --chart-3: #fbb52d;
+  --chart-4: #0d6eff;
+  --chart-5: #f63d34;
   --radius: 0.5rem;
-  --sidebar: #f8f8f8;
+  --sidebar: #f7f9fb;
   --sidebar-foreground: #191b1c;
   --sidebar-primary: #191b1c;
   --sidebar-primary-foreground: #ffffff;
   --sidebar-accent: #efefef;
   --sidebar-accent-foreground: #191b1c;
   --sidebar-border: #e8e8e8;
-  --sidebar-ring: #b0b0b0;
+  --sidebar-ring: #5797f7;
 }
 
 @layer base {
