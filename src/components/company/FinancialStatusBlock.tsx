@@ -18,6 +18,17 @@ function formatYAxis(value: number) {
   return `${value}억`;
 }
 
+// 호버 툴팁: 반투명(50%, 뒤 비침) + corner radius 8
+const TOOLTIP_STYLE = {
+  fontSize: 12,
+  borderRadius: 8,
+  backgroundColor: "rgba(255, 255, 255, 0.5)",
+  backdropFilter: "blur(2px)",
+  WebkitBackdropFilter: "blur(2px)",
+  border: "1px solid rgba(232, 232, 232, 0.6)",
+  boxShadow: "0 4px 16px rgba(0, 0, 0, 0.08)",
+} as const;
+
 /**
  * 기업 Overview의 "재무 현황"과 재무현황분석의 "재무 상황"이 공유하는 블록.
  * (매출액 막대차트 + 매출액·순이익 복합차트 + 5년 표)
@@ -52,9 +63,9 @@ export default function FinancialStatusBlock({
                   <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                   <XAxis dataKey="year" tick={{ fontSize: 11, fill: "#8c8c8c" }} axisLine={false} tickLine={false} />
                   <YAxis tickFormatter={formatYAxis} tick={{ fontSize: 11, fill: "#8c8c8c" }} axisLine={false} tickLine={false} width={48} />
-                  <ReTooltip formatter={(v: number) => `${v.toLocaleString()}억`} contentStyle={{ fontSize: 12, borderRadius: 8, border: "1px solid #e8e8e8" }} />
+                  <ReTooltip cursor={{ fill: "transparent" }} formatter={(v: number) => `${v.toLocaleString()}억`} contentStyle={TOOLTIP_STYLE} />
                   <Legend wrapperStyle={{ fontSize: 12 }} />
-                  <Bar dataKey="매출액" fill="#f4c75e" radius={[3, 3, 0, 0]} />
+                  <Bar dataKey="매출액" fill="#f4c75e" radius={[8, 8, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
@@ -66,9 +77,9 @@ export default function FinancialStatusBlock({
                   <XAxis dataKey="year" tick={{ fontSize: 11, fill: "#8c8c8c" }} axisLine={false} tickLine={false} />
                   <YAxis yAxisId="left" tickFormatter={formatYAxis} tick={{ fontSize: 11, fill: "#8c8c8c" }} axisLine={false} tickLine={false} width={48} />
                   <YAxis yAxisId="right" orientation="right" tickFormatter={v => `${(v/1000).toFixed(1)}천`} tick={{ fontSize: 11, fill: "#8c8c8c" }} axisLine={false} tickLine={false} width={40} />
-                  <ReTooltip formatter={(v: number) => `${v.toLocaleString()}억`} contentStyle={{ fontSize: 12, borderRadius: 8, border: "1px solid #e8e8e8" }} />
+                  <ReTooltip cursor={{ fill: "transparent" }} formatter={(v: number) => `${v.toLocaleString()}억`} contentStyle={TOOLTIP_STYLE} />
                   <Legend wrapperStyle={{ fontSize: 12 }} />
-                  <Bar yAxisId="left" dataKey="매출액" fill="#5797f7" radius={[3, 3, 0, 0]} />
+                  <Bar yAxisId="left" dataKey="매출액" fill="#5797f7" radius={[8, 8, 0, 0]} />
                   <Line yAxisId="right" type="monotone" dataKey="순이익" stroke="#ed5b9a" strokeWidth={2} dot={{ r: 3 }} />
                 </ComposedChart>
               </ResponsiveContainer>
