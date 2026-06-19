@@ -14,22 +14,17 @@ export function SectionTitle({
   children: React.ReactNode;
 }) {
   const [open, setOpen] = useState(false);
-  const [hover, setHover] = useState(false);
   const clickable = !!description;
 
   return (
     <div style={{ marginBottom: 24 }}>
       <h2
         onClick={() => clickable && setOpen((o) => !o)}
-        onMouseEnter={() => setHover(true)}
-        onMouseLeave={() => setHover(false)}
+        className={`pb-section-title${clickable ? " pb-section-title--clickable" : ""}`}
         style={{
           display: "inline-block",
           fontSize: 24,
           fontWeight: 600,
-          color: hover ? "var(--primary-500)" : "#191b1c",
-          cursor: clickable ? "pointer" : "default",
-          transition: "color 0.15s",
           userSelect: "none",
         }}
       >
@@ -37,9 +32,16 @@ export function SectionTitle({
         {children}
       </h2>
       {open && description && (
-        <p style={{ marginTop: 12, fontSize: 17, lineHeight: 1.6, color: "#191b1c" }}>
-          {description}
-        </p>
+        <div
+          style={{
+            marginTop: 12,
+            background: "#f7f9fb",
+            borderRadius: 10,
+            padding: 8,
+          }}
+        >
+          <p style={{ fontSize: 17, lineHeight: 1.6, color: "#191b1c" }}>{description}</p>
+        </div>
       )}
     </div>
   );

@@ -161,6 +161,17 @@
   * {
     @apply border-border outline-ring/50;
   }
+  /* 번호 붙은 섹션 제목 — 클릭 가능 시 호버하면 primary/500 */
+  .pb-section-title {
+    color: #191b1c;
+    transition: color 0.15s;
+  }
+  .pb-section-title--clickable {
+    cursor: pointer;
+  }
+  .pb-section-title--clickable:hover {
+    color: var(--primary-500);
+  }
   body {
     @apply bg-background text-foreground;
     font-family: "Pretendard GOV", -apple-system, BlinkMacSystemFont, sans-serif;
