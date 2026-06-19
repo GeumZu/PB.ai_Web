@@ -1,22 +1,15 @@
 "use client";
 
 import {
-  PieChart, Pie, Cell, Tooltip as ReTooltip,
-  BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid,
-  Legend, ResponsiveContainer, ComposedChart,
+  PieChart, Pie, Cell, ResponsiveContainer,
 } from "recharts";
 import { ChevronRight } from "lucide-react";
 import { SectionTitle, ScoreBar } from "../shared";
+import FinancialStatusBlock from "../FinancialStatusBlock";
 import {
-  PROFILE, REVENUE, TOTAL_REVENUE, PL_DATA, BS_DATA,
+  PROFILE, REVENUE, TOTAL_REVENUE,
   HEALTH_ITEMS, HEALTH_SCORE, INDUSTRY,
 } from "@/lib/companyData";
-
-function formatYAxis(value: number) {
-  if (value >= 10000) return `${(value / 10000).toFixed(0)}조`;
-  if (value >= 1000)  return `${(value / 1000).toFixed(0)}천억`;
-  return `${value}억`;
-}
 
 function CompanyProfile() {
   return (
@@ -70,47 +63,6 @@ function RevenueComposition() {
   );
 }
 
-function FinancialStatus() {
-  return (
-    <section>
-      <SectionTitle>재무 현황</SectionTitle>
-      <div className="flex gap-3" style={{ minWidth: 0 }}>
-        <div className="bg-white rounded-xl" style={{ flex: 1, minWidth: 0, border: "1px solid #f0f0f0", padding: "20px 16px" }}>
-          <p style={{ fontSize: 14, fontWeight: 600, color: "#191b1c", marginBottom: 16 }}>주요 손익 현황</p>
-          <ResponsiveContainer width="100%" height={320}>
-            <ComposedChart data={PL_DATA} margin={{ top: 8, right: 8, bottom: 0, left: 8 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
-              <XAxis dataKey="year" tick={{ fontSize: 12, fill: "#8c8c8c" }} axisLine={false} tickLine={false} />
-              <YAxis yAxisId="left" tickFormatter={formatYAxis} tick={{ fontSize: 11, fill: "#8c8c8c" }} axisLine={false} tickLine={false} width={48} />
-              <YAxis yAxisId="right" orientation="right" tickFormatter={v => `${(v/1000).toFixed(1)}천`} tick={{ fontSize: 11, fill: "#8c8c8c" }} axisLine={false} tickLine={false} width={44} />
-              <ReTooltip formatter={(value: number, name: string) => [`${value.toLocaleString()}억`, name]} contentStyle={{ fontSize: 12, borderRadius: 8, border: "1px solid #e8e8e8" }} />
-              <Legend wrapperStyle={{ fontSize: 12 }} />
-              <Bar yAxisId="left" dataKey="매출액" fill="#c5d9fd" radius={[3, 3, 0, 0]} />
-              <Line yAxisId="right" type="monotone" dataKey="영업이익" stroke="#5797f7" strokeWidth={2} dot={{ r: 3 }} />
-              <Line yAxisId="right" type="monotone" dataKey="순이익" stroke="#62c6a8" strokeWidth={2} dot={{ r: 3 }} />
-            </ComposedChart>
-          </ResponsiveContainer>
-        </div>
-        <div className="bg-white rounded-xl" style={{ flex: 1, minWidth: 0, border: "1px solid #f0f0f0", padding: "20px 16px" }}>
-          <p style={{ fontSize: 14, fontWeight: 600, color: "#191b1c", marginBottom: 16 }}>주요 재무 상태</p>
-          <ResponsiveContainer width="100%" height={320}>
-            <BarChart data={BS_DATA} margin={{ top: 8, right: 8, bottom: 0, left: 8 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
-              <XAxis dataKey="year" tick={{ fontSize: 12, fill: "#8c8c8c" }} axisLine={false} tickLine={false} />
-              <YAxis tickFormatter={formatYAxis} tick={{ fontSize: 11, fill: "#8c8c8c" }} axisLine={false} tickLine={false} width={48} />
-              <ReTooltip formatter={(value: number, name: string) => [`${value.toLocaleString()}억`, name]} contentStyle={{ fontSize: 12, borderRadius: 8, border: "1px solid #e8e8e8" }} />
-              <Legend wrapperStyle={{ fontSize: 12 }} />
-              <Bar dataKey="자산총계" fill="#5797f7" radius={[3, 3, 0, 0]} />
-              <Bar dataKey="부채총계" fill="#f4b942" radius={[3, 3, 0, 0]} />
-              <Bar dataKey="자본총계" fill="#62c6a8" radius={[3, 3, 0, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-      </div>
-    </section>
-  );
-}
-
 function FinancialHealth() {
   return (
     <section>
@@ -156,7 +108,7 @@ export default function OverviewSection() {
     <div className="flex flex-col" style={{ gap: 64 }}>
       <CompanyProfile />
       <RevenueComposition />
-      <FinancialStatus />
+      <FinancialStatusBlock title="재무 현황" />
       <FinancialHealth />
       <IndustryDescription />
     </div>
