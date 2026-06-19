@@ -18,16 +18,56 @@ function formatYAxis(value: number) {
   return `${value}억`;
 }
 
-// 호버 툴팁: 반투명(50%, 뒤 비침) + corner radius 8
-const TOOLTIP_STYLE = {
-  fontSize: 12,
-  borderRadius: 8,
-  backgroundColor: "rgba(255, 255, 255, 0.5)",
-  backdropFilter: "blur(2px)",
-  WebkitBackdropFilter: "blur(2px)",
-  border: "1px solid rgba(232, 232, 232, 0.6)",
-  boxShadow: "0 4px 16px rgba(0, 0, 0, 0.08)",
-} as const;
+// 기간 라벨: "2025/06" → "25년 1-6월", "2024" → "2024년"
+function formatPeriod(year: string) {
+  if (year.includes("/")) {
+    const [y] = year.split("/");
+    return `${y.slice(2)}년 1-6월`;
+  }
+  return `${year}년`;
+}
+
+// 금액(억) → "₩2조 5000억"
+function formatWon(value: number) {
+  const jo = Math.floor(value / 10000);
+  const eok = value % 10000;
+  if (jo > 0 && eok > 0) return `₩${jo}조 ${eok}억`;
+  if (jo > 0) return `₩${jo}조`;
+  return `₩${value.toLocaleString()}억`;
+}
+
+interface TipEntry { name?: string; value?: number; color?: string; }
+interface TipProps { active?: boolean; payload?: TipEntry[]; label?: string; }
+
+// 호버 툴팁: 반투명(50%, 뒤 비침) + corner radius 8, 기간/스와치/금액 형식
+function ChartTooltip({ active, payload, label }: TipProps) {
+  if (!active || !payload || payload.length === 0) return null;
+  return (
+    <div
+      style={{
+        borderRadius: 8,
+        backgroundColor: "rgba(255, 255, 255, 0.5)",
+        backdropFilter: "blur(3px)",
+        WebkitBackdropFilter: "blur(3px)",
+        border: "1px solid rgba(232, 232, 232, 0.6)",
+        boxShadow: "0 4px 16px rgba(0, 0, 0, 0.1)",
+        padding: "14px 18px",
+        minWidth: 180,
+      }}
+    >
+      <p style={{ fontSize: 13, color: "#8c8c8c", marginBottom: 12 }}>{formatPeriod(label ?? "")}</p>
+      {payload.map((p, i) => (
+        <div key={i} className="flex items-center" style={{ gap: 10, marginTop: i > 0 ? 6 : 0 }}>
+          <span style={{ width: 10, height: 10, borderRadius: 2, background: p.color, flexShrink: 0 }} />
+          <span style={{ fontSize: 15, color: "#191b1c" }}>{p.name}</span>
+          <span style={{ fontSize: 15, fontWeight: 500, color: "#191b1c", marginLeft: 8 }}>
+            {formatWon(Number(p.value))}
+          </span>
+        </div>
+      ))}
+    </div>
+  );
+}
 
 /**
  * 기업 Overview의 "재무 현황"과 재무현황분석의 "재무 상황"이 공유하는 블록.
@@ -63,7 +103,7 @@ export default function FinancialStatusBlock({
                   <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                   <XAxis dataKey="year" tick={{ fontSize: 11, fill: "#8c8c8c" }} axisLine={false} tickLine={false} />
                   <YAxis tickFormatter={formatYAxis} tick={{ fontSize: 11, fill: "#8c8c8c" }} axisLine={false} tickLine={false} width={48} />
-                  <ReTooltip cursor={{ fill: "transparent" }} formatter={(v: number) => `${v.toLocaleString()}억`} contentStyle={TOOLTIP_STYLE} />
+                  <ReTooltip cursor={{ fill: "transparent" }} content={<ChartTooltip />} />
                   <Legend wrapperStyle={{ fontSize: 12 }} />
                   <Bar dataKey="매출액" fill="#f4c75e" radius={[8, 8, 0, 0]} />
                 </BarChart>
@@ -77,7 +117,7 @@ export default function FinancialStatusBlock({
                   <XAxis dataKey="year" tick={{ fontSize: 11, fill: "#8c8c8c" }} axisLine={false} tickLine={false} />
                   <YAxis yAxisId="left" tickFormatter={formatYAxis} tick={{ fontSize: 11, fill: "#8c8c8c" }} axisLine={false} tickLine={false} width={48} />
                   <YAxis yAxisId="right" orientation="right" tickFormatter={v => `${(v/1000).toFixed(1)}천`} tick={{ fontSize: 11, fill: "#8c8c8c" }} axisLine={false} tickLine={false} width={40} />
-                  <ReTooltip cursor={{ fill: "transparent" }} formatter={(v: number) => `${v.toLocaleString()}억`} contentStyle={TOOLTIP_STYLE} />
+                  <ReTooltip cursor={{ fill: "transparent" }} content={<ChartTooltip />} />
                   <Legend wrapperStyle={{ fontSize: 12 }} />
                   <Bar yAxisId="left" dataKey="매출액" fill="#5797f7" radius={[8, 8, 0, 0]} />
                   <Line yAxisId="right" type="monotone" dataKey="순이익" stroke="#ed5b9a" strokeWidth={2} dot={{ r: 3 }} />
