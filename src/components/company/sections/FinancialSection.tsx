@@ -4,7 +4,7 @@ import { SectionTitle, SubTitle, ScoreBar } from "../shared";
 import MetricTable from "../MetricTable";
 import FinancialStatusBlock from "../FinancialStatusBlock";
 import {
-  HEALTH_ITEMS, HEALTH_SCORE, RATIO_SUMMARY,
+  HEALTH_ITEMS, HEALTH_SCORE, RATIO_SUMMARY, SECTION_DESC,
   LIQUIDITY, LEVERAGE, INVEST_PROFIT, SALES_MARGIN, GROWTH, ACTIVITY,
 } from "@/lib/companyData";
 
@@ -14,7 +14,7 @@ function RatioJudgment() {
 
   return (
     <section>
-      <SectionTitle>2. 재무 비율 판정</SectionTitle>
+      <SectionTitle num={2} description={SECTION_DESC.ratio}>재무 비율 판정</SectionTitle>
 
       {/* 점수 바 */}
       <div style={{ marginBottom: 24 }}>
@@ -68,10 +68,15 @@ function RatioJudgment() {
 }
 
 // ── 그룹 섹션 (제목 + 서브표) ─────────────────────────────
-function AnalysisGroup({ title, subs }: { title: string; subs: { sub: string; rows: typeof LIQUIDITY }[] }) {
+function AnalysisGroup({ num, title, description, subs }: {
+  num: number;
+  title: string;
+  description?: React.ReactNode;
+  subs: { sub: string; rows: typeof LIQUIDITY }[];
+}) {
   return (
     <section>
-      <SectionTitle>{title}</SectionTitle>
+      <SectionTitle num={num} description={description}>{title}</SectionTitle>
       <div className="flex flex-col" style={{ gap: 40 }}>
         {subs.map(({ sub, rows }) => (
           <div key={sub}>
@@ -87,20 +92,20 @@ function AnalysisGroup({ title, subs }: { title: string; subs: { sub: string; ro
 export default function FinancialSection() {
   return (
     <div className="flex flex-col" style={{ gap: 64 }}>
-      <FinancialStatusBlock title="1. 재무 상황" />
+      <FinancialStatusBlock num={1} title="재무 상황" description={SECTION_DESC.situation} />
       <RatioJudgment />
-      <AnalysisGroup title="3. 안정성 분석" subs={[
+      <AnalysisGroup num={3} title="안정성 분석" description={SECTION_DESC.stability} subs={[
         { sub: "3.1. 유동성 분석", rows: LIQUIDITY },
         { sub: "3.2. 레버리지 분석", rows: LEVERAGE },
       ]} />
-      <AnalysisGroup title="4. 수익성 분석" subs={[
+      <AnalysisGroup num={4} title="수익성 분석" description={SECTION_DESC.profitability} subs={[
         { sub: "4.1. 투자수익성 분석", rows: INVEST_PROFIT },
         { sub: "4.2. 판매마진 분석", rows: SALES_MARGIN },
       ]} />
-      <AnalysisGroup title="5. 성장성 분석" subs={[
+      <AnalysisGroup num={5} title="성장성 분석" description={SECTION_DESC.growth} subs={[
         { sub: "", rows: GROWTH },
       ]} />
-      <AnalysisGroup title="6. 활동성 분석" subs={[
+      <AnalysisGroup num={6} title="활동성 분석" description={SECTION_DESC.activity} subs={[
         { sub: "", rows: ACTIVITY },
       ]} />
     </div>

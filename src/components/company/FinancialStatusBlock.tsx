@@ -8,6 +8,8 @@ import { ChevronDown } from "lucide-react";
 import { SectionTitle } from "./shared";
 import { PL_DATA, FINANCIAL_SITUATION } from "@/lib/companyData";
 
+// 차트/표 사이 간격은 SectionTitle(마진 24) 아래에서 시작
+
 const SIT_COLS = ["년도", "매출액", "자산 총계", "부채 총계", "자본 총계", "영업이익", "순이익"];
 const SIT_KEYS = ["year", "매출액", "자산총계", "부채총계", "자본총계", "영업이익", "순이익"] as const;
 
@@ -18,13 +20,21 @@ function formatYAxis(value: number) {
 }
 
 /**
- * 기업 Overview의 "재무 현황"과 재무현황분석의 "1. 재무 상황"이 공유하는 블록.
+ * 기업 Overview의 "재무 현황"과 재무현황분석의 "재무 상황"이 공유하는 블록.
  * (매출액 막대차트 + 매출액·순이익 복합차트 + 5년 표)
  */
-export default function FinancialStatusBlock({ title }: { title: string }) {
+export default function FinancialStatusBlock({
+  num,
+  title,
+  description,
+}: {
+  num?: number;
+  title: string;
+  description?: React.ReactNode;
+}) {
   return (
     <section>
-      <SectionTitle>{title}</SectionTitle>
+      <SectionTitle num={num} description={description}>{title}</SectionTitle>
 
       {/* 차트 2개 */}
       <div className="flex gap-3" style={{ minWidth: 0, marginBottom: 16 }}>

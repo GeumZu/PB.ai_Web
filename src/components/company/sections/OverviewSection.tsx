@@ -8,13 +8,13 @@ import { SectionTitle, ScoreBar } from "../shared";
 import FinancialStatusBlock from "../FinancialStatusBlock";
 import {
   PROFILE, REVENUE, TOTAL_REVENUE,
-  HEALTH_ITEMS, HEALTH_SCORE, INDUSTRY,
+  HEALTH_ITEMS, HEALTH_SCORE, INDUSTRY, SECTION_DESC,
 } from "@/lib/companyData";
 
 function CompanyProfile() {
   return (
     <section>
-      <SectionTitle>기업 프로필</SectionTitle>
+      <SectionTitle num={1} description={SECTION_DESC.profile}>기업 프로필</SectionTitle>
       <div>
         <div className="flex" style={{ borderBottom: "1px solid #d7d9db", paddingBottom: 8 }}>
           <span style={{ width: 180, fontSize: 15, color: "#191b1c", flexShrink: 0 }}>구분</span>
@@ -34,7 +34,7 @@ function CompanyProfile() {
 function RevenueComposition() {
   return (
     <section>
-      <SectionTitle>매출 산업 구성</SectionTitle>
+      <SectionTitle num={2} description={SECTION_DESC.revenue}>매출 산업 구성</SectionTitle>
       <div className="flex items-center gap-8" style={{ background: "#f7f9fb", borderRadius: 10, padding: "20px 32px" }}>
         <div style={{ width: 214, height: 214, flexShrink: 0 }}>
           <ResponsiveContainer width="100%" height="100%">
@@ -66,10 +66,7 @@ function RevenueComposition() {
 function FinancialHealth() {
   return (
     <section>
-      <SectionTitle>재무건전성</SectionTitle>
-      <p style={{ fontSize: 17, color: "#191b1c", marginBottom: 20 }}>
-        농심의 재무건전성은 필수소비재 섹터 업종 중위수와 시계열 점수로 판정됩니다
-      </p>
+      <SectionTitle num={4} description={SECTION_DESC.health}>재무건전성</SectionTitle>
       <div className="flex gap-[5px] flex-wrap" style={{ marginBottom: 20 }}>
         {HEALTH_ITEMS.map((item) => (
           <div key={item.label} style={{ width: 100, height: 100, border: "1px solid #0042fb", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 6 }}>
@@ -90,7 +87,7 @@ function FinancialHealth() {
 function IndustryDescription() {
   return (
     <section>
-      <SectionTitle>산업 설명</SectionTitle>
+      <SectionTitle num={5} description={SECTION_DESC.industry}>산업 설명</SectionTitle>
       <div style={{ border: "1px solid #d7d9db", borderRadius: 4, overflow: "hidden" }}>
         {INDUSTRY.map(({ label, value }, i) => (
           <div key={label} className="flex" style={{ borderBottom: i < INDUSTRY.length - 1 ? "1px solid #d7d9db" : "none" }}>
@@ -108,7 +105,7 @@ export default function OverviewSection() {
     <div className="flex flex-col" style={{ gap: 64 }}>
       <CompanyProfile />
       <RevenueComposition />
-      <FinancialStatusBlock title="재무 현황" />
+      <FinancialStatusBlock num={3} title="재무 현황" description={SECTION_DESC.financial} />
       <FinancialHealth />
       <IndustryDescription />
     </div>

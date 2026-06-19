@@ -1,13 +1,47 @@
 "use client";
 
+import { useState } from "react";
 import { MessageSquare } from "lucide-react";
 
-// ── 섹션 제목 (번호 + 제목) ──────────────────────────────
-export function SectionTitle({ children }: { children: React.ReactNode }) {
+// ── 섹션 제목 (번호 + 호버 색상 + 클릭 시 설명 토글) ──────
+export function SectionTitle({
+  num,
+  description,
+  children,
+}: {
+  num?: number;
+  description?: React.ReactNode;
+  children: React.ReactNode;
+}) {
+  const [open, setOpen] = useState(false);
+  const [hover, setHover] = useState(false);
+  const clickable = !!description;
+
   return (
-    <h2 style={{ fontSize: 24, fontWeight: 600, color: "#191b1c", marginBottom: 24 }}>
-      {children}
-    </h2>
+    <div style={{ marginBottom: 24 }}>
+      <h2
+        onClick={() => clickable && setOpen((o) => !o)}
+        onMouseEnter={() => setHover(true)}
+        onMouseLeave={() => setHover(false)}
+        style={{
+          display: "inline-block",
+          fontSize: 24,
+          fontWeight: 600,
+          color: hover ? "var(--primary-500)" : "#191b1c",
+          cursor: clickable ? "pointer" : "default",
+          transition: "color 0.15s",
+          userSelect: "none",
+        }}
+      >
+        {num != null ? `${num}. ` : ""}
+        {children}
+      </h2>
+      {open && description && (
+        <p style={{ marginTop: 12, fontSize: 17, lineHeight: 1.6, color: "#191b1c" }}>
+          {description}
+        </p>
+      )}
+    </div>
   );
 }
 
