@@ -205,16 +205,17 @@ export const GROWTH: MetricRow[] = [
   { name: "매출액증가율",   y2023: "2.85%",  avg: "2.85%",  median: "20.87%", tScore: 1, iScore: 1 },
 ];
 
+// 활동성: 회전율은 단위가 "회" (% 아님 — 명세서 주의)
 export const ACTIVITY: MetricRow[] = [
-  { name: "총자산회전율",     y2023: "203.85%", avg: "199.85%", median: "152.60%", tScore: 1,  iScore: 1  },
-  { name: "자기자본회전율",   y2023: "158.16%", avg: "152.60%", median: "98.97%",  tScore: 1,  iScore: 1  },
-  { name: "자본금회전율",     y2023: "108.16%", avg: "112.60%", median: "88.97%",  tScore: 1,  iScore: 1  },
-  { name: "경영자산회전율",   y2023: "20.52%",  avg: "30.41%",  median: "29.40%",  tScore: -1, iScore: -1 },
-  { name: "비유동자산회전율", y2023: "22.36%",  avg: "19.47%",  median: "16.17%",  tScore: 1,  iScore: 1  },
-  { name: "유형자산회전율",   y2023: "74.36%",  avg: "80.30%",  median: "89.31%",  tScore: 1,  iScore: 1  },
-  { name: "재고자산회전율",   y2023: "71.30%",  avg: "75.80%",  median: "78.94%",  tScore: 1,  iScore: 1  },
-  { name: "제품회전율",       y2023: "71.30%",  avg: "75.80%",  median: "78.94%",  tScore: 1,  iScore: 1  },
-  { name: "매출채권회전율",   y2023: "71.30%",  avg: "75.80%",  median: "78.94%",  tScore: 1,  iScore: 1  },
+  { name: "총자산회전율",     y2023: "0.85회", avg: "0.82회", median: "0.78회", tScore: 1,  iScore: 1  },
+  { name: "자기자본회전율",   y2023: "1.16회", avg: "1.12회", median: "0.99회", tScore: 1,  iScore: 1  },
+  { name: "자본금회전율",     y2023: "12.4회", avg: "11.8회", median: "9.7회",  tScore: 1,  iScore: 1  },
+  { name: "경영자산회전율",   y2023: "0.92회", avg: "0.88회", median: "0.85회", tScore: -1, iScore: -1 },
+  { name: "비유동자산회전율", y2023: "1.45회", avg: "1.39회", median: "1.31회", tScore: 1,  iScore: 1  },
+  { name: "유형자산회전율",   y2023: "2.31회", avg: "2.18회", median: "1.97회", tScore: 1,  iScore: 1  },
+  { name: "재고자산회전율",   y2023: "8.74회", avg: "8.31회", median: "7.62회", tScore: 1,  iScore: 1  },
+  { name: "제품회전율",       y2023: "11.2회", avg: "10.6회", median: "9.8회",  tScore: 1,  iScore: 1  },
+  { name: "매출채권회전율",   y2023: "9.45회", avg: "9.10회", median: "8.34회", tScore: 1,  iScore: 1  },
 ];
 
 // ════════════════════════════════════════════════════════
