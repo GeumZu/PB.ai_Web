@@ -40,7 +40,7 @@ export function SectionTitle({
             padding: 8,
           }}
         >
-          <p style={{ fontSize: 17, lineHeight: 1.6, color: "#191b1c" }}>{description}</p>
+          <p style={{ fontSize: 17, lineHeight: 1.6, color: "#191b1c", whiteSpace: "pre-line" }}>{description}</p>
         </div>
       )}
     </div>

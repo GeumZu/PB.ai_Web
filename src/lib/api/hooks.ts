@@ -124,3 +124,16 @@ export function useFinancialAnalysisDetails(code: string) {
     },
   });
 }
+
+// ── 투자지표 (REPORT004) ──────────────────────────────────
+export function useInvestmentIndicators(code: string) {
+  return useQuery({
+    queryKey: ["investmentIndicators", code],
+    enabled: !!code,
+    queryFn: async () => {
+      // 백엔드 준비 전: mock만 사용 (API 명세 확정 후 fetcher 추가)
+      await delay();
+      return { years: mock.INVEST_YEARS, sections: mock.INVEST_SECTIONS };
+    },
+  });
+}

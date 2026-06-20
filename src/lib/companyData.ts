@@ -216,3 +216,114 @@ export const ACTIVITY: MetricRow[] = [
   { name: "제품회전율",       y2023: "71.30%",  avg: "75.80%",  median: "78.94%",  tScore: 1,  iScore: 1  },
   { name: "매출채권회전율",   y2023: "71.30%",  avg: "75.80%",  median: "78.94%",  tScore: 1,  iScore: 1  },
 ];
+
+// ════════════════════════════════════════════════════════
+// 투자지표 (REPORT004) — Figma node 370:13478
+// 표: 행=지표(+펼침), 열=연도. 차트: 라인 2개(좌/우 시리즈)
+// ════════════════════════════════════════════════════════
+export const INVEST_YEARS = ["2021/12", "2022/12", "2023/12", "2024/12", "2025/6"];
+
+export type Fmt = "won" | "ratio" | "percent";
+
+export interface IndicatorMetric {
+  name: string;
+  values: (number | null)[]; // 연도별 raw 값 (null = "-")
+}
+
+export interface IndicatorSection {
+  id: string;
+  title: string;
+  description: string;         // 제목 클릭 시 펼쳐지는 설명
+  format: Fmt;                 // 기본 포맷
+  formatOverride?: Record<string, Fmt>;
+  leftKeys: string[];         // 좌측 차트 시리즈
+  rightKeys: string[];        // 우측 차트 시리즈
+  metrics: IndicatorMetric[];
+}
+
+export const INVEST_SECTIONS: IndicatorSection[] = [
+  {
+    id: "perShare",
+    title: "Per Share (주당 지표)",
+    description:
+      "매출(SPS) 과 자산(BPS) 은 큰 폭으로 흔들리지 않지만, 수익성(EPS·EBITDAPS·CFPS) 은 뚜렷한 감소세\n→물가상승, 원가부담, 소비 둔화 등의 영향 가능성이 높음.\nEPS가 줄면 PER이 높아지고, 주가 대비 수익성이 악화되는 구조이므로 향후 원가율 안정화·판매가격 인상 여부가 관건입니다.",
+    format: "won",
+    leftKeys: ["EPS", "EBITDAPS", "CFPS"],
+    rightKeys: ["SPS", "BPS"],
+    metrics: [
+      { name: "EPS",      values: [16412, 19091, 28262, 25861, 14572] },
+      { name: "EBITDAPS", values: [34725, 37577, 54273, 46976, 26348] },
+      { name: "CFPS",     values: [33687, 38226, 47670, 46029, 25104] },
+      { name: "SPS",      values: [437800, 514425, 560704, 565335, 289437] },
+      { name: "BPS",      values: [372424, 392090, 412814, 452565, 450816] },
+    ],
+  },
+  {
+    id: "multiple",
+    title: "Multiple (배수 지표)",
+    description:
+      "농심은 모든 멀티플 지표가 업종 평균 이하로, 시장에서 저평가된 전통 소비재 가치주(Value-oriented consumer staple)로 평가됩니다.\nPER·EV/EBITDA의 하락은 이익 대비 주가 부담이 완화되었음을, PBR·PSR의 낮은 수준은 자산 및 매출 대비 시장 신뢰가 보수적임을 뜻합니다.\n결국 농심은 수익성(EPS) 은 다소 둔화되었지만, 현금흐름 안정성(CFPS) 과 자산가치(BPS) 는 견고해 장기 투자 관점에서 안정적인 가치투자형 종목으로 해석됩니다.",
+    format: "ratio",
+    leftKeys: ["PER", "PCR", "EV/EBITDA"],
+    rightKeys: ["PBR", "PSR", "EV/Sales"],
+    metrics: [
+      { name: "PER",       values: [19.41, 18.7, 14.4, 14.46, null] },
+      { name: "PBR",       values: [0.86, 0.91, 0.99, 0.83, 0.87] },
+      { name: "PSR",       values: [0.73, 0.69, 0.73, 0.66, null] },
+      { name: "PCR",       values: [9.45, 9.34, 8.54, 8.13, null] },
+      { name: "EV/EBITDA", values: [9.25, 9.55, 7.53, 7.96, null] },
+      { name: "EV/Sales",  values: [0.73, 0.7, 0.73, 0.66, null] },
+    ],
+  },
+  {
+    id: "dividends",
+    title: "Dividends (배당지표)",
+    description:
+      "기업이 이익을 낸 뒤, 그 일부를 주주에게 현금으로 돌려주는 것이에요.\nCash Dividends (현금배당) → 가장 일반적인 형태.\nStock Dividends (주식배당) → 현금 대신 신주를 발행해 배분.\nDPS (Dividend Per Share): 주당 배당금; 총배당금 ÷ 발행주식수\nDividend Yield (배당수익률): 주가 대비 배당 비율; DPS ÷ 주가 × 100%\nPayout Ratio (배당성향): 순이익 중 배당으로 나간 비율; 총배당금 ÷ 순이익 × 100%",
+    format: "won",
+    formatOverride: { "배당성향": "percent", "배당수익률": "percent" },
+    leftKeys: ["배당성향"],
+    rightKeys: ["배당수익률"],
+    metrics: [
+      { name: "DPS",       values: [4000, 5000, 5000, 5000, null] },
+      { name: "배당성향",   values: [23, 25, 17, 18, null] },
+      { name: "배당수익률", values: [2.8, 3.1, 2.9, 3.0, null] },
+    ],
+  },
+  {
+    id: "fcf",
+    title: "FCF (Free Cash Flow, 잉여현금흐름)",
+    description:
+      "기업이 영업으로 번 현금에서 설비투자(CAPEX) 같은 유지·확장 비용을 뺀 후, '자유롭게 쓸 수 있는 현금'을 의미해요.",
+    format: "won",
+    leftKeys: ["총현금흐름", "총투자"],
+    rightKeys: ["FCFF"],
+    metrics: [
+      { name: "총현금흐름", values: [16412, 19091, 28262, 25861, 14572] },
+      { name: "총투자",     values: [437800, 514425, 560704, 565335, 289437] },
+      { name: "FCFF",       values: [372424, 392090, 412814, 452565, 450816] },
+    ],
+  },
+];
+
+// 라인차트 시리즈 색상 (Graph 팔레트)
+export const INVEST_LINE_COLORS = ["#6f86fc", "#ff45a5", "#fbb52d", "#0d6eff", "#f63d34"];
+
+// 투자지표 +펼침: 지표 → [분자, 분모] 계산식 구성요소 (Figma 581:4588)
+export const INVEST_SUBROWS: Record<string, string[]> = {
+  EPS: ["지배주주순이익", "수정평균주식수"],
+  EBITDAPS: ["EBITDA", "수정평균주식수"],
+  CFPS: ["영업현금흐름", "수정평균주식수"],
+  SPS: ["매출액", "수정평균주식수"],
+  BPS: ["지배주주순자산", "수정기말주식수"],
+  PER: ["수정주가(보통주)", "EPS"],
+  PBR: ["수정주가(보통주)", "BPS"],
+  PSR: ["수정주가(보통주)", "SPS"],
+  PCR: ["수정주가(보통주)", "CFPS"],
+  "EV/EBITDA": ["EV", "EBITDA"],
+  "EV/Sales": ["EV", "매출액"],
+  DPS: ["DPS(보통주,현금)", "무상조정계수(보통주)"],
+  "배당성향": ["배당금(현금)", "지배주주순이익"],
+  "배당수익률": ["DPS(보통주,현금)", "결산기말 종가"],
+  "총현금흐름": ["세후영업이익", "유무형자산상각비"],
+};

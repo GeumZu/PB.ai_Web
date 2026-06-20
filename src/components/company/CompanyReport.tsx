@@ -5,6 +5,7 @@ import CompanyHeader from "./CompanyHeader";
 import { ChatButton } from "./shared";
 import OverviewSection from "./sections/OverviewSection";
 import FinancialSection from "./sections/FinancialSection";
+import IndicatorsSection from "./sections/IndicatorsSection";
 import { COMPANY } from "@/lib/companyData";
 
 function Placeholder({ label }: { label: string }) {
@@ -30,7 +31,7 @@ export default function CompanyReport({ code }: { code: string }) {
       <div className="mx-auto" style={{ maxWidth: 920, padding: "40px 24px 80px" }}>
         {activeTab === "overview"  && <OverviewSection code={code} />}
         {activeTab === "financial" && <FinancialSection code={code} />}
-        {activeTab === "invest"    && <Placeholder label="투자지표" />}
+        {activeTab === "invest"    && <IndicatorsSection code={code} />}
         {activeTab === "valuation" && <Placeholder label="주식가치평가" />}
         {activeTab === "chat"      && <Placeholder label="채팅" />}
       </div>
