@@ -352,16 +352,18 @@ export const VALUATION_CHART = [
 
 // 범위 바 2개 (시장범위 / 투자 모델 평균값)
 export const VALUATION_RANGES = {
-  market: { label: "시장범위", suffix: "3개월", min: 324000, mid: 454000, max: 579000, handle: 454000, band: true },
-  model: { label: "투자 모델 평균값", value: 246667, min: 246667, mid: 322334, max: 395000, handle: 246667, band: false },
+  // band: 회색 트랙 위 파란 범위 밴드(시장범위 전용) [lo, hi]
+  market: { label: "시장범위", suffix: "3개월", min: 324000, mid: 454000, max: 579000, handle: 454000, band: [355000, 495000] as [number, number] },
+  model: { label: "투자 모델 평균값", value: 246667, min: 246667, mid: 322334, max: 395000, handle: 246667 },
 };
 
-// 투자 모델 4가지 추정주가 ("4가지 모델" 펼침)
+// 투자 모델 4가지 추정주가 ("4가지 모델" 펼침 — 각 모델이 범위 바로 표시)
+// short: 펼친 행 라벨, price: 핸들(추정주가). 스케일은 VALUATION_RANGES.model 공유.
 export const VALUATION_MODELS = [
-  { key: "PFM", label: "유사기업 이용법(PFM)", price: 246667 },
-  { key: "AE",  label: "초과이익할인법(AE법)", price: 322334 },
-  { key: "EVA", label: "경제적부가가치(EVA)", price: 290000 },
-  { key: "DCF", label: "현금흐름할인법(DCF)", price: 395000 },
+  { key: "PFM", label: "유사기업 이용법(PFM)", short: "유사기업이용법",   price: 246667 },
+  { key: "RI",  label: "초과이익할인법(RI법)", short: "초과이익할인법",   price: 362667 },
+  { key: "EVA", label: "경제적부가가치(EVA)",  short: "경제적부가가치법", price: 285000 },
+  { key: "DCF", label: "현금흐름할인법(DCF)",  short: "현금흐름할인법",   price: 395000 },
 ];
 
 // 아코디언 섹션 (2~6번)
@@ -373,8 +375,97 @@ export interface ValuationSection {
 }
 export const VALUATION_SECTIONS: ValuationSection[] = [
   { num: 2, title: "유사기업 이용법(PFM)", desc: "유사 상장회사의 주가배수(PER·PBR 등)를 이용한 시장접근법으로 추정주가를 산출합니다. 동종업종·기업규모가 유사한 상위 4개 기업의 주가배수 중위수를 적용합니다.", price: 246667 },
-  { num: 3, title: "초과이익할인법(AE법)", desc: "미래 초과이익(AE)을 자기자본비용(r)으로 할인하여 추정주가를 산출합니다. 총주식가치 = 미래 초과이익의 현재가치 + 당기 자기자본.", price: 322334 },
-  { num: 4, title: "경제적부가가치(EVA)", desc: "EVA와 가중평균자본비용(WACC)을 이용해 5년 추정합니다. 총기업가치 = 미래 EVA 현재가치 + 투하자본 + 비영업자산.", price: 290000 },
+  { num: 3, title: "초과이익할인법(RI법)", desc: "미래 초과이익(RI)을 자기자본비용(r)으로 할인하여 추정주가를 산출합니다. 총주식가치 = 미래 초과이익의 현재가치 + 당기 자기자본.", price: 362667 },
+  { num: 4, title: "경제적부가가치(EVA)", desc: "EVA와 가중평균자본비용(WACC)을 이용해 5년 추정합니다. 총기업가치 = 미래 EVA 현재가치 + 투하자본 + 비영업자산.", price: 285000 },
   { num: 5, title: "현금흐름할인법(DCF)", desc: "미래 잉여현금흐름(FCFF)을 WACC로 할인하여 추정합니다(추정기간 5년). 총기업가치 = 미래 FCFF 현재가치 + 비영업자산.", price: 395000 },
   { num: 6, title: "추정오차율분석", desc: "각 모델의 추정주가와 실제주가 간 오차율을 분석하여 평가 신뢰도를 점검합니다.", price: null },
 ];
+
+// ── 유사기업 이용법(PFM) 상세 — 아코디언 2번 펼침 (Figma 920:17677) ──
+// 차트: 실제주가 + 추정선 2개(NB/OB)
+export const PFM_CHART = VALUATION_CHART.map((d) => ({
+  date: d.date,
+  actual: d.실제주가,
+  nb: Math.round(d.평균추정주가 * 0.95),
+  ob: Math.round(d.평균추정주가 * 1.05),
+}));
+export const PFM_LINES = [
+  { key: "actual", name: "실제주가", color: "#eb0d0d" },
+  { key: "nb",     name: "NB",      color: "#5797f7" },
+  { key: "ob",     name: "OB",      color: "#62c6a8" },
+];
+
+// 평가 프리미엄 (3개 컬럼) — tone: under=저평가, over=고평가, none=중립
+export const PFM_PREMIUM = [
+  { label: "P(NB)",    value: "490,643원", delta: "-20% 저평가", tone: "under", note: "(2024 당기순이익 기준)" },
+  { label: "P(OB)",    value: "680,643원", delta: "18% 고평가",  tone: "over",  note: "(2024 영업이익 기준)" },
+  { label: "실제 주가", value: "600,000원", delta: "",            tone: "none",  note: "2025.11.24 종가 기준" },
+];
+
+// 핵심 개념 (번호 3개)
+export const PFM_CONCEPTS = [
+  { n: 1, title: "상대가치 평가(Relative Valuation)", desc: "유사기업이용법은 업종, 규모, 성장성이 비슷한 동종기업의 주가배수(PER, PBR 등)를 기준으로 목표기업의 적정주가를 추정하는 상대가치 평가 방법입니다. 시장에서 형성된 밸류에이션 수준을 반영합니다." },
+  { n: 2, title: "가중평균 방식", desc: "PER과 PBR의 중요도를 반영하여 가중평균으로 추정주가를 산출합니다. PER(수익성 기준) 1/3, PBR(순자산 기준) 2/3로 가중치를 부여하여 균형잡힌 평가를 제공합니다." },
+  { n: 3, title: "중위값(Median) 사용", desc: "유사기업의 PER과 PBR 분포에서 평균 대신 중위값을 사용하여 극단값(outlier)의 영향을 제거하고 보다 안정적인 추정치를 도출합니다." },
+];
+
+// 추정주가(P^M) 계산 과정
+export const PFM_FORMULA = "P^M = [(PER¹ × X × 1) + (PBR¹ × BV × 2)] / (3 × VOL)";
+export const PFM_VARS = [
+  { sym: "PER¹", desc: "동종상장기업 PER 중위수" },
+  { sym: "X",    desc: "당기순이익(지배기업지분)/영업이익" },
+  { sym: "PBR¹", desc: "동종상장기업 PBR 중위수" },
+  { sym: "BV",   desc: "자본총계(지배기업지분)" },
+  { sym: "VOL",  desc: "보통주 발행주식수" },
+];
+export const PFM_WEIGHTS = {
+  items: ["PER 기여분: 1/3 가중 (수익가치)", "PBR 기여분: 2/3 가중 (순자산가치)"],
+  note: "순자산가치(PBR)에 2배 가중치를 부여하여 보다 안정적이고 보수적인 평가를 수행합니다.",
+};
+export const PFM_CALC = {
+  cols: [
+    {
+      title: "P(NB)",
+      rows: ["당기순이익_지배기업지분(X) : ₩1,200억", "PER¹(NB) : 22.14x", "PBR¹(NB) : 4.46x", "자기자본(BV) : ₩5,500억", "발행주식수(VOL) : 150백만주"],
+      formula: "(22.14 × 1200 × 1) + (4.46 × 5500 × 2) / (3 × 150)",
+      result: "₩59",
+    },
+    {
+      title: "P(OB)",
+      rows: ["영업이익(X) : ₩1,200억", "PER¹(OB) : 22.14x", "PBR¹(OB) : 4.46x", "자기자본(BV) : ₩5,500억", "발행주식수(VOL) : 150백만주"],
+      formula: "(22.14 × 1200 × 1) + (4.46 × 5500 × 2) / (3 × 150)",
+      result: "₩109",
+    },
+  ],
+  final: { expr: "( ₩59 + ₩109 )/2", value: "₩168" },
+};
+
+// 동종상장기업 데이터 표 (P(NB) / P(OB))
+export const PFM_TABLE_NB = {
+  title: "P(NB) 동종상장기업 데이터",
+  subtitle: "식품 업종 주요 기업 비교",
+  cols: ["기업명", "당기순이익", "자본총계", "PER", "PBR"],
+  rows: [
+    ["오뚜기", "₩950억", "₩4,200억", "30.00x", "6.79x"],
+    ["CJ제일제당", "₩4,200억", "₩18,500억", "22.62x", "5.14x"],
+    ["삼양식품", "₩580억", "₩2,800억", "21.55x", "4.46x"],
+    ["농심", "₩420억", "₩2,100억", "21.19x", "4.24x"],
+    ["SPC삼립", "₩280억", "₩1,450억", "22.14x", "4.28x"],
+  ],
+  median: { label: "산업중위수", cells: ["-", "-", "22.14x", "4.46x"] },
+  highlight: "농심",
+};
+export const PFM_TABLE_OB = {
+  title: "P(OB) 동종상장기업 데이터",
+  subtitle: "식품 업종 주요 기업 비교",
+  cols: ["기업명", "영업이익", "자본총계", "PER", "PBR"],
+  rows: [
+    ["오뚜기", "₩28,500억", "₩4,200억", "30.00x", "6.79x"],
+    ["CJ제일제당", "₩95,000억", "₩18,500억", "22.62x", "5.14x"],
+    ["삼양식품", "₩12,500억", "₩2,800억", "21.55x", "4.46x"],
+    ["농심", "₩8,900억", "₩2,100억", "21.19x", "4.24x"],
+    ["SPC삼립", "₩6,200억", "₩1,450억", "22.14x", "4.28x"],
+  ],
+  median: { label: "중위수", cells: ["-", "-", "22.14x", "4.46x"] },
+  highlight: "농심",
+};
