@@ -14,20 +14,21 @@ const won = (v: number) => `₩${v.toLocaleString()}`;
 
 // ── 범위 바 (회색 트랙 + 파란 핸들 + min/중앙/max 라벨) ────
 function RangeBar({
-  label, suffix, valueLabel, min, mid, max, handle, band, children,
+  label, suffix, valueLabel, min, mid, max, handle, band, dense, children,
 }: {
   label: string; suffix?: string; valueLabel?: string;
   min: number; mid: number; max: number; handle: number; band: boolean;
-  children?: React.ReactNode;
+  dense?: boolean; children?: React.ReactNode;
 }) {
   const pct = ((handle - min) / (max - min)) * 100;
+  const fs = dense ? 15 : 17;
   return (
-    <div className="flex items-start" style={{ gap: 24, padding: "8px 0" }}>
+    <div className="flex items-start" style={{ gap: 24, padding: dense ? "6px 0" : "8px 0" }}>
       <div style={{ width: 220, flexShrink: 0 }}>
         <div className="flex items-baseline gap-1.5">
-          <span style={{ fontSize: 17, fontWeight: 600, color: "#191b1c" }}>{label}</span>
+          <span style={{ fontSize: fs, fontWeight: 600, color: "#191b1c" }}>{label}</span>
           {suffix && <span style={{ fontSize: 14, color: "#6b6d6f" }}>{suffix}</span>}
-          {valueLabel && <span style={{ fontSize: 17, fontWeight: 600, color: "#5797f7" }}>{valueLabel}</span>}
+          {valueLabel && <span style={{ fontSize: fs, fontWeight: 600, color: "#5797f7" }}>{valueLabel}</span>}
         </div>
         {children}
       </div>
@@ -135,17 +136,20 @@ export default function ValuationSection({ code }: { code: string }) {
             <button onClick={() => setModelsOpen((o) => !o)} className="flex items-center gap-1" style={{ fontSize: 13, color: "#939597", marginTop: 6 }}>
               4가지 모델 <ChevronDown size={13} style={{ transform: modelsOpen ? "rotate(180deg)" : "none", transition: "transform .15s" }} />
             </button>
-            {modelsOpen && (
-              <div className="flex flex-col" style={{ gap: 6, marginTop: 10 }}>
-                {models.map((m) => (
-                  <div key={m.key} className="flex items-center justify-between" style={{ fontSize: 13 }}>
-                    <span style={{ color: "#6b6d6f" }}>{m.label}</span>
-                    <span style={{ color: "#191b1c", fontWeight: 500 }}>{won(m.price)}</span>
-                  </div>
-                ))}
-              </div>
-            )}
           </RangeBar>
+
+          {modelsOpen && (
+            <div className="flex flex-col">
+              {models.map((m) => (
+                <RangeBar
+                  key={m.key} dense
+                  label={m.short} valueLabel={won(m.price)}
+                  min={ranges.model.min} mid={ranges.model.mid} max={ranges.model.max}
+                  handle={m.price} band={false}
+                />
+              ))}
+            </div>
+          )}
         </div>
       </section>
 

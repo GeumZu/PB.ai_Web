@@ -356,12 +356,13 @@ export const VALUATION_RANGES = {
   model: { label: "투자 모델 평균값", value: 246667, min: 246667, mid: 322334, max: 395000, handle: 246667, band: false },
 };
 
-// 투자 모델 4가지 추정주가 ("4가지 모델" 펼침)
+// 투자 모델 4가지 추정주가 ("4가지 모델" 펼침 — 각 모델이 범위 바로 표시)
+// short: 펼친 행 라벨, price: 핸들(추정주가). 스케일은 VALUATION_RANGES.model 공유.
 export const VALUATION_MODELS = [
-  { key: "PFM", label: "유사기업 이용법(PFM)", price: 246667 },
-  { key: "AE",  label: "초과이익할인법(AE법)", price: 322334 },
-  { key: "EVA", label: "경제적부가가치(EVA)", price: 290000 },
-  { key: "DCF", label: "현금흐름할인법(DCF)", price: 395000 },
+  { key: "PFM", label: "유사기업 이용법(PFM)", short: "유사기업이용법",   price: 246667 },
+  { key: "RI",  label: "초과이익할인법(RI법)", short: "초과이익할인법",   price: 362667 },
+  { key: "EVA", label: "경제적부가가치(EVA)",  short: "경제적부가가치법", price: 285000 },
+  { key: "DCF", label: "현금흐름할인법(DCF)",  short: "현금흐름할인법",   price: 395000 },
 ];
 
 // 아코디언 섹션 (2~6번)
@@ -373,8 +374,8 @@ export interface ValuationSection {
 }
 export const VALUATION_SECTIONS: ValuationSection[] = [
   { num: 2, title: "유사기업 이용법(PFM)", desc: "유사 상장회사의 주가배수(PER·PBR 등)를 이용한 시장접근법으로 추정주가를 산출합니다. 동종업종·기업규모가 유사한 상위 4개 기업의 주가배수 중위수를 적용합니다.", price: 246667 },
-  { num: 3, title: "초과이익할인법(AE법)", desc: "미래 초과이익(AE)을 자기자본비용(r)으로 할인하여 추정주가를 산출합니다. 총주식가치 = 미래 초과이익의 현재가치 + 당기 자기자본.", price: 322334 },
-  { num: 4, title: "경제적부가가치(EVA)", desc: "EVA와 가중평균자본비용(WACC)을 이용해 5년 추정합니다. 총기업가치 = 미래 EVA 현재가치 + 투하자본 + 비영업자산.", price: 290000 },
+  { num: 3, title: "초과이익할인법(RI법)", desc: "미래 초과이익(RI)을 자기자본비용(r)으로 할인하여 추정주가를 산출합니다. 총주식가치 = 미래 초과이익의 현재가치 + 당기 자기자본.", price: 362667 },
+  { num: 4, title: "경제적부가가치(EVA)", desc: "EVA와 가중평균자본비용(WACC)을 이용해 5년 추정합니다. 총기업가치 = 미래 EVA 현재가치 + 투하자본 + 비영업자산.", price: 285000 },
   { num: 5, title: "현금흐름할인법(DCF)", desc: "미래 잉여현금흐름(FCFF)을 WACC로 할인하여 추정합니다(추정기간 5년). 총기업가치 = 미래 FCFF 현재가치 + 비영업자산.", price: 395000 },
   { num: 6, title: "추정오차율분석", desc: "각 모델의 추정주가와 실제주가 간 오차율을 분석하여 평가 신뢰도를 점검합니다.", price: null },
 ];
