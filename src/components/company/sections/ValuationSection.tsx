@@ -9,39 +9,49 @@ import { ChevronDown, ChevronRight } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useValuation } from "@/lib/api/hooks";
 import type { ValuationSection as VSection } from "@/lib/companyData";
+import PfmDetail from "./PfmDetail";
 
 const won = (v: number) => `₩${v.toLocaleString()}`;
 
-// ── 범위 바 (회색 트랙 + 파란 핸들 + min/중앙/max 라벨) ────
+// ── 범위 바 (얇은 회색 트랙 + 파란 점 + min/중앙/max 라벨) ──
+// band: [lo, hi] 값이 주어지면 파란 범위 밴드를 그림(시장범위 전용). 없으면 채움 없이 점만.
+// accent: 라벨을 파란색으로 (시장범위·투자모델평균값)
 function RangeBar({
-  label, suffix, valueLabel, min, mid, max, handle, band, dense, children,
+  label, suffix, valueLabel, min, mid, max, handle, band, accent, dense, children,
 }: {
   label: string; suffix?: string; valueLabel?: string;
-  min: number; mid: number; max: number; handle: number; band: boolean;
+  min: number; mid: number; max: number; handle: number;
+  band?: [number, number]; accent?: boolean;
   dense?: boolean; children?: React.ReactNode;
 }) {
-  const pct = ((handle - min) / (max - min)) * 100;
+  const toPct = (v: number) => ((v - min) / (max - min)) * 100;
+  const pct = toPct(handle);
   const fs = dense ? 15 : 17;
   return (
-    <div className="flex items-start" style={{ gap: 24, padding: dense ? "6px 0" : "8px 0" }}>
+    <div className="flex items-start" style={{ gap: 24, padding: dense ? "8px 0" : "10px 0" }}>
       <div style={{ width: 220, flexShrink: 0 }}>
-        <div className="flex items-baseline gap-1.5">
-          <span style={{ fontSize: fs, fontWeight: 600, color: "#191b1c" }}>{label}</span>
-          {suffix && <span style={{ fontSize: 14, color: "#6b6d6f" }}>{suffix}</span>}
-          {valueLabel && <span style={{ fontSize: fs, fontWeight: 600, color: "#5797f7" }}>{valueLabel}</span>}
+        <div className="flex items-baseline">
+          <span style={{ fontSize: fs, fontWeight: 600, color: accent ? "#5797f7" : "#191b1c" }}>{label}</span>
+          {suffix && <span style={{ fontSize: 14, color: "#939597", marginLeft: 6 }}>{suffix}</span>}
+          {valueLabel && <span style={{ fontSize: fs, fontWeight: 600, color: "#5797f7", marginLeft: 4 }}>{valueLabel}</span>}
         </div>
         {children}
       </div>
-      <div style={{ flex: 1, minWidth: 0, paddingTop: 6 }}>
-        <div style={{ position: "relative", height: 8 }}>
+      <div style={{ flex: 1, minWidth: 0, paddingTop: 8 }}>
+        <div style={{ position: "relative", height: 4 }}>
           <div style={{ position: "absolute", inset: 0, background: "#e7e9eb", borderRadius: 999 }} />
-          <div style={{ position: "absolute", top: 0, bottom: 0, left: 0, width: band ? "100%" : `${pct}%`, background: "#9dcbfd", borderRadius: 999 }} />
-          <div style={{ position: "absolute", top: "50%", left: `${pct}%`, transform: "translate(-50%,-50%)", width: 16, height: 16, borderRadius: "50%", background: "#5797f7", border: "2px solid #fff", boxShadow: "0 1px 4px rgba(0,0,0,0.2)" }} />
+          {band && (
+            <div style={{ position: "absolute", top: 0, bottom: 0, left: `${toPct(band[0])}%`, width: `${toPct(band[1]) - toPct(band[0])}%`, background: "#5797f7", borderRadius: 999 }} />
+          )}
+          <div style={{ position: "absolute", top: "50%", left: `${pct}%`, transform: "translate(-50%,-50%)", width: 12, height: 12, borderRadius: "50%", background: "#5797f7", border: "2px solid #fff", boxShadow: "0 1px 3px rgba(0,0,0,0.18)" }} />
         </div>
         <div className="flex justify-between" style={{ marginTop: 10 }}>
-          {[min, mid, max].map((v, i) => (
-            <span key={i} style={{ fontSize: 15, color: v === handle ? "#191b1c" : "#939597", fontWeight: v === handle ? 600 : 400 }}>{won(v)}</span>
-          ))}
+          {[min, mid, max].map((v, i) => {
+            const hot = !!band && v === handle; // 시장범위 현재값만 파랑 강조
+            return (
+              <span key={i} style={{ fontSize: 14, color: hot ? "#5797f7" : "#939597", fontWeight: hot ? 600 : 400 }}>{won(v)}</span>
+            );
+          })}
         </div>
       </div>
     </div>
@@ -49,7 +59,8 @@ function RangeBar({
 }
 
 // ── 아코디언 항목 ─────────────────────────────────────────
-function Accordion({ section }: { section: VSection }) {
+// children이 있으면 상세 콘텐츠(PfmDetail 등)를, 없으면 기본 설명/추정주가를 렌더
+function Accordion({ section, children }: { section: VSection; children?: React.ReactNode }) {
   const [open, setOpen] = useState(false);
   return (
     <div style={{ border: "1px solid #e7e9eb", borderRadius: 12, overflow: "hidden" }}>
@@ -63,12 +74,16 @@ function Accordion({ section }: { section: VSection }) {
       </button>
       {open && (
         <div style={{ padding: "0 20px 18px", background: "#fff" }}>
-          <p style={{ fontSize: 15, lineHeight: 1.6, color: "#58595b" }}>{section.desc}</p>
-          {section.price != null && (
-            <div className="flex items-center gap-2" style={{ marginTop: 12 }}>
-              <span style={{ fontSize: 14, color: "#6b6d6f" }}>추정주가</span>
-              <span style={{ fontSize: 17, fontWeight: 600, color: "#5797f7" }}>{won(section.price)}</span>
-            </div>
+          {children ?? (
+            <>
+              <p style={{ fontSize: 15, lineHeight: 1.6, color: "#58595b" }}>{section.desc}</p>
+              {section.price != null && (
+                <div className="flex items-center gap-2" style={{ marginTop: 12 }}>
+                  <span style={{ fontSize: 14, color: "#6b6d6f" }}>추정주가</span>
+                  <span style={{ fontSize: 17, fontWeight: 600, color: "#5797f7" }}>{won(section.price)}</span>
+                </div>
+              )}
+            </>
           )}
         </div>
       )}
@@ -121,17 +136,18 @@ export default function ValuationSection({ code }: { code: string }) {
           </LineChart>
         </ResponsiveContainer>
 
-        <div style={{ background: "#f7f9fb", borderRadius: 12, padding: "20px 24px", marginTop: 16 }}>
+        <div style={{ background: "#fff", border: "1px solid #ebedf0", borderRadius: 16, padding: "20px 24px", marginTop: 16 }}>
           <RangeBar
+            accent
             label={ranges.market.label} suffix={ranges.market.suffix}
             min={ranges.market.min} mid={ranges.market.mid} max={ranges.market.max}
             handle={ranges.market.handle} band={ranges.market.band}
           />
-          <div style={{ height: 1, background: "#e7e9eb", margin: "8px 0" }} />
           <RangeBar
+            accent
             label={ranges.model.label} valueLabel={won(ranges.model.value)}
             min={ranges.model.min} mid={ranges.model.mid} max={ranges.model.max}
-            handle={ranges.model.handle} band={ranges.model.band}
+            handle={ranges.model.handle}
           >
             <button onClick={() => setModelsOpen((o) => !o)} className="flex items-center gap-1" style={{ fontSize: 13, color: "#939597", marginTop: 6 }}>
               4가지 모델 <ChevronDown size={13} style={{ transform: modelsOpen ? "rotate(180deg)" : "none", transition: "transform .15s" }} />
@@ -139,23 +155,30 @@ export default function ValuationSection({ code }: { code: string }) {
           </RangeBar>
 
           {modelsOpen && (
-            <div className="flex flex-col">
-              {models.map((m) => (
-                <RangeBar
-                  key={m.key} dense
-                  label={m.short} valueLabel={won(m.price)}
-                  min={ranges.model.min} mid={ranges.model.mid} max={ranges.model.max}
-                  handle={m.price} band={false}
-                />
-              ))}
-            </div>
+            <>
+              <div style={{ height: 1, background: "#e7e9eb", margin: "6px 0 4px" }} />
+              <div className="flex flex-col">
+                {models.map((m) => (
+                  <RangeBar
+                    key={m.key} dense
+                    label={m.short} valueLabel={won(m.price)}
+                    min={ranges.model.min} mid={ranges.model.mid} max={ranges.model.max}
+                    handle={m.price}
+                  />
+                ))}
+              </div>
+            </>
           )}
         </div>
       </section>
 
-      {/* 2~6 아코디언 */}
+      {/* 2~6 아코디언 (2번 PFM은 상세 페이지 펼침) */}
       <div className="flex flex-col" style={{ gap: 12 }}>
-        {sections.map((s) => <Accordion key={s.num} section={s} />)}
+        {sections.map((s) => (
+          <Accordion key={s.num} section={s}>
+            {s.num === 2 ? <PfmDetail /> : undefined}
+          </Accordion>
+        ))}
       </div>
     </div>
   );
