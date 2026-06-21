@@ -137,3 +137,20 @@ export function useInvestmentIndicators(code: string) {
     },
   });
 }
+
+// ── 주식 가치 평가 (REPORT005) ────────────────────────────
+export function useValuation(code: string) {
+  return useQuery({
+    queryKey: ["valuation", code],
+    enabled: !!code,
+    queryFn: async () => {
+      await delay();
+      return {
+        chart: mock.VALUATION_CHART,
+        ranges: mock.VALUATION_RANGES,
+        models: mock.VALUATION_MODELS,
+        sections: mock.VALUATION_SECTIONS,
+      };
+    },
+  });
+}
