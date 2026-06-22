@@ -383,17 +383,23 @@ export const VALUATION_SECTIONS: ValuationSection[] = [
 
 // ── 유사기업 이용법(PFM) 상세 — 아코디언 2번 펼침 (Figma 920:17677) ──
 // 차트: 실제주가 + 추정선 2개(NB/OB)
-export const PFM_CHART = VALUATION_CHART.map((d) => ({
-  date: d.date,
-  actual: d.실제주가,
-  nb: Math.round(d.평균추정주가 * 0.95),
-  ob: Math.round(d.평균추정주가 * 1.05),
-}));
+export const PFM_CHART = VALUATION_CHART.map((d, i, arr) => {
+  const t = Math.min(1, i / (arr.length - 3)); // 마지막 구간은 평탄(plateau)
+  return {
+    date: d.date,
+    actual: d.실제주가,
+    nb: Math.round(302000 + 40000 * t), // 상단 추정선(NB)
+    ob: Math.round(280000 + 36000 * t), // 하단 추정선(OB)
+  };
+});
 export const PFM_LINES = [
-  { key: "actual", name: "실제주가", color: "#eb0d0d" },
-  { key: "nb",     name: "NB",      color: "#5797f7" },
-  { key: "ob",     name: "OB",      color: "#62c6a8" },
+  { key: "actual", name: "실제주가", color: "#eb0d0d" }, // 빨강
+  { key: "nb",     name: "P(NB)",   color: "#f5a623" }, // 주황(상단)
+  { key: "ob",     name: "P(OB)",   color: "#22c55e" }, // 초록(하단)
 ];
+
+// 제목 아래 GPT 요약 설명 바 (LLM 연동 시 실제 텍스트로 교체)
+export const PFM_SUMMARY = "농심의 유사기업 이용법을 돌렸을 때 gpt 넣고 설명";
 
 // 평가 프리미엄 (3개 컬럼) — tone: under=저평가, over=고평가, none=중립
 export const PFM_PREMIUM = [

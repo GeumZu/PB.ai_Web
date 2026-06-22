@@ -1,9 +1,10 @@
 "use client";
 
 import {
-  LineChart, Line, XAxis, YAxis, CartesianGrid, Legend,
+  LineChart, Line, XAxis, YAxis, CartesianGrid,
   Tooltip as ReTooltip, ResponsiveContainer,
 } from "recharts";
+import { useState } from "react";
 import { ChevronDown } from "lucide-react";
 import {
   PFM_CHART, PFM_LINES, PFM_PREMIUM, PFM_CONCEPTS, PFM_FORMULA,
@@ -12,8 +13,8 @@ import {
 
 const won = (v: number) => `₩${v.toLocaleString()}`;
 
-// 저평가=초록 / 고평가=빨강 / 중립=회색
-const toneColor = (t: string) => (t === "under" ? "#16a34a" : t === "over" ? "#eb0d0d" : "#6b6d6f");
+// 저평가=파랑 / 고평가=빨강 / 중립=회색
+const toneColor = (t: string) => (t === "under" ? "#5797f7" : t === "over" ? "#eb0d0d" : "#6b6d6f");
 
 // ── 카드 래퍼 ─────────────────────────────────────────────
 function Card({ title, subtitle, children }: { title: string; subtitle?: string; children: React.ReactNode }) {
@@ -67,6 +68,7 @@ function PfmTable({ t }: { t: typeof PFM_TABLE_NB }) {
 }
 
 export default function PfmDetail() {
+  const [formulaOpen, setFormulaOpen] = useState(true);
   return (
     <div className="flex flex-col" style={{ gap: 24, paddingTop: 8 }}>
       {/* 1. PFM 차트 */}
@@ -81,25 +83,36 @@ export default function PfmDetail() {
         <ResponsiveContainer width="100%" height={300}>
           <LineChart data={PFM_CHART} margin={{ top: 8, right: 16, bottom: 0, left: 8 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-            <XAxis dataKey="date" tick={{ fontSize: 11, fill: "#8c8c8c" }} axisLine={false} tickLine={false} minTickGap={24} />
-            <YAxis tickFormatter={(v) => v.toLocaleString()} tick={{ fontSize: 11, fill: "#8c8c8c" }} axisLine={false} tickLine={false} width={56} domain={[200000, 500000]} />
+            <XAxis dataKey="date" tick={{ fontSize: 11, fill: "#8c8c8c" }} axisLine={false} tickLine={false} interval={2} />
+            <YAxis tickFormatter={(v) => v.toLocaleString()} tick={{ fontSize: 11, fill: "#8c8c8c" }} axisLine={false} tickLine={false} width={56} domain={[200000, 500000]} ticks={[200000, 250000, 300000, 350000, 400000, 450000, 500000]} />
             <ReTooltip
               formatter={(v, n) => [won(Number(v)), String(n)]}
               contentStyle={{ fontSize: 12, borderRadius: 8, backgroundColor: "rgba(255,255,255,0.5)", backdropFilter: "blur(3px)", border: "none", boxShadow: "0 4px 16px rgba(0,0,0,0.1)" }}
             />
-            <Legend wrapperStyle={{ fontSize: 12 }} />
-            {PFM_LINES.map((l) => (
+            {/* 선은 실제주가가 맨 위에 오도록 역순 렌더 (범례는 아래 커스텀으로 순서 고정) */}
+            {[...PFM_LINES].reverse().map((l) => (
               <Line key={l.key} type="monotone" dataKey={l.key} name={l.name} stroke={l.color} strokeWidth={2} dot={false} />
             ))}
           </LineChart>
         </ResponsiveContainer>
+        {/* 커스텀 범례 — 순서 고정(실제주가·NB·OB), —●— 아이콘 */}
+        <div className="flex items-center justify-center" style={{ gap: 16, marginTop: 4 }}>
+          {PFM_LINES.map((l) => (
+            <span key={l.key} className="flex items-center" style={{ gap: 6, fontSize: 12, color: "#58595b" }}>
+              <span style={{ position: "relative", display: "inline-block", width: 16, height: 2, background: l.color }}>
+                <span style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%,-50%)", width: 7, height: 7, borderRadius: "50%", background: l.color }} />
+              </span>
+              {l.name}
+            </span>
+          ))}
+        </div>
       </div>
 
       {/* 2. 평가 프리미엄 */}
       <Card title="평가 프리미엄">
-        <div className="grid" style={{ gridTemplateColumns: "repeat(3,1fr)", gap: 16, marginTop: 16 }}>
-          {PFM_PREMIUM.map((p) => (
-            <div key={p.label}>
+        <div className="grid" style={{ gridTemplateColumns: "repeat(3,1fr)", marginTop: 16 }}>
+          {PFM_PREMIUM.map((p, i) => (
+            <div key={p.label} style={{ paddingLeft: i > 0 ? 24 : 0, borderLeft: i > 0 ? "1px solid #ebedf0" : "none" }}>
               <div style={{ fontSize: 17, fontWeight: 600, color: "#191b1c" }}>{p.label} : {p.value}</div>
               <div style={{ fontSize: 14, marginTop: 6 }}>
                 {p.delta && <span style={{ color: toneColor(p.tone), fontWeight: 600, marginRight: 6 }}>{p.delta}</span>}
@@ -127,10 +140,15 @@ export default function PfmDetail() {
 
       {/* 4. 추정주가(P^M) 계산 과정 */}
       <Card title="추정주가(P^M) 계산 과정">
-        {/* 산식 */}
+        {/* 산식 (접기/펼치기) */}
         <div style={{ marginTop: 16 }}>
-          <div style={{ fontSize: 15, fontWeight: 600, color: "#191b1c", marginBottom: 8 }}>유사기업이용법(PFM) 산식</div>
-          <div style={{ background: "#f7f9fb", borderRadius: 8, padding: "12px 16px", fontSize: 14, color: "#3c3d3f", fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace" }}>{PFM_FORMULA}</div>
+          <button onClick={() => setFormulaOpen((o) => !o)} className="flex items-center gap-1" style={{ fontSize: 15, fontWeight: 600, color: "#191b1c", marginBottom: 8 }}>
+            유사기업이용법(PFM) 산식
+            <ChevronDown size={16} color="#6b6d6f" style={{ transform: formulaOpen ? "rotate(180deg)" : "none", transition: "transform .15s" }} />
+          </button>
+          {formulaOpen && (
+            <div style={{ background: "#f7f9fb", borderRadius: 8, padding: "12px 16px", fontSize: 14, color: "#3c3d3f", fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace" }}>{PFM_FORMULA}</div>
+          )}
         </div>
 
         {/* 변수 설명 + 가중치 */}

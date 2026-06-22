@@ -9,6 +9,7 @@ import { ChevronDown, ChevronRight } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useValuation } from "@/lib/api/hooks";
 import type { ValuationSection as VSection } from "@/lib/companyData";
+import { PFM_SUMMARY } from "@/lib/companyData";
 import PfmDetail from "./PfmDetail";
 
 const won = (v: number) => `₩${v.toLocaleString()}`;
@@ -58,42 +59,26 @@ function RangeBar({
   );
 }
 
-// ── 아코디언 항목 ─────────────────────────────────────────
-// children이 있으면 상세 콘텐츠(PfmDetail 등)를, 없으면 기본 설명/추정주가를 렌더
-function Accordion({ section, children }: { section: VSection; children?: React.ReactNode }) {
-  const [open, setOpen] = useState(false);
+// ── 방법론 선택 버튼 (StockValuationTabs) ─────────────────
+// 컴팩트한 버튼 목록. 선택된 방법의 상세는 목록 아래 별도 패널로 렌더한다.
+function MethodButton({ section, active, onClick }: { section: VSection; active: boolean; onClick: () => void }) {
   return (
-    <div style={{ border: "1px solid #e7e9eb", borderRadius: 12, overflow: "hidden" }}>
-      <button
-        onClick={() => setOpen((o) => !o)}
-        className="flex items-center justify-between w-full hover:bg-[#f7f9fb] transition-colors"
-        style={{ padding: "18px 20px", background: "#fff" }}
-      >
-        <span style={{ fontSize: 17, fontWeight: 500, color: "#191b1c" }}>{section.num}. {section.title}</span>
-        {open ? <ChevronDown size={18} color="#6b6d6f" /> : <ChevronRight size={18} color="#6b6d6f" />}
-      </button>
-      {open && (
-        <div style={{ padding: "0 20px 18px", background: "#fff" }}>
-          {children ?? (
-            <>
-              <p style={{ fontSize: 15, lineHeight: 1.6, color: "#58595b" }}>{section.desc}</p>
-              {section.price != null && (
-                <div className="flex items-center gap-2" style={{ marginTop: 12 }}>
-                  <span style={{ fontSize: 14, color: "#6b6d6f" }}>추정주가</span>
-                  <span style={{ fontSize: 17, fontWeight: 600, color: "#5797f7" }}>{won(section.price)}</span>
-                </div>
-              )}
-            </>
-          )}
-        </div>
-      )}
-    </div>
+    <button
+      onClick={onClick}
+      className="flex items-center justify-between w-full hover:bg-[#f7f9fb] transition-colors"
+      style={{ border: "1px solid #e7e9eb", borderRadius: 12, padding: "18px 20px", background: active ? "#f7f9fb" : "#fff" }}
+    >
+      <span style={{ fontSize: 17, fontWeight: 500, color: "#191b1c" }}>{section.num}. {section.title}</span>
+      {active ? <ChevronDown size={18} color="#6b6d6f" /> : <ChevronRight size={18} color="#6b6d6f" />}
+    </button>
   );
 }
 
 export default function ValuationSection({ code }: { code: string }) {
   const { data, isLoading } = useValuation(code);
   const [modelsOpen, setModelsOpen] = useState(false);
+  const [activeMethod, setActiveMethod] = useState<number | null>(null);
+  const [descOpen, setDescOpen] = useState(false);
 
   if (isLoading || !data) {
     return (
@@ -124,8 +109,8 @@ export default function ValuationSection({ code }: { code: string }) {
         <ResponsiveContainer width="100%" height={320}>
           <LineChart data={chart} margin={{ top: 8, right: 16, bottom: 0, left: 8 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-            <XAxis dataKey="date" tick={{ fontSize: 11, fill: "#8c8c8c" }} axisLine={false} tickLine={false} minTickGap={24} />
-            <YAxis tickFormatter={(v) => v.toLocaleString()} tick={{ fontSize: 11, fill: "#8c8c8c" }} axisLine={false} tickLine={false} width={56} domain={[200000, 500000]} />
+            <XAxis dataKey="date" tick={{ fontSize: 11, fill: "#8c8c8c" }} axisLine={false} tickLine={false} interval={2} />
+            <YAxis tickFormatter={(v) => v.toLocaleString()} tick={{ fontSize: 11, fill: "#8c8c8c" }} axisLine={false} tickLine={false} width={56} domain={[200000, 500000]} ticks={[200000, 250000, 300000, 350000, 400000, 450000, 500000]} />
             <ReTooltip
               formatter={(v, n) => [won(Number(v)), String(n)]}
               contentStyle={{ fontSize: 12, borderRadius: 8, backgroundColor: "rgba(255,255,255,0.5)", backdropFilter: "blur(3px)", border: "none", boxShadow: "0 4px 16px rgba(0,0,0,0.1)" }}
@@ -172,14 +157,52 @@ export default function ValuationSection({ code }: { code: string }) {
         </div>
       </section>
 
-      {/* 2~6 아코디언 (2번 PFM은 상세 페이지 펼침) */}
+      {/* 방법론 버튼 목록(2~6) — Figma StockValuationTabs */}
       <div className="flex flex-col" style={{ gap: 12 }}>
         {sections.map((s) => (
-          <Accordion key={s.num} section={s}>
-            {s.num === 2 ? <PfmDetail /> : undefined}
-          </Accordion>
+          <MethodButton
+            key={s.num}
+            section={s}
+            active={activeMethod === s.num}
+            onClick={() => { setActiveMethod((cur) => (cur === s.num ? null : s.num)); setDescOpen(false); }}
+          />
         ))}
       </div>
+
+      {/* 선택된 방법론 상세 패널 (버튼 목록 아래에 별도 섹션으로) */}
+      {(() => {
+        const sec = sections.find((s) => s.num === activeMethod);
+        if (!sec) return null;
+        return (
+          <section style={{ marginTop: 4 }}>
+            {/* 제목: 호버 시 primary/500, 클릭 시 설명 토글. 활성이어도 비호버면 원래 색 */}
+            <div style={{ marginBottom: 16 }}>
+              <h2
+                onClick={() => setDescOpen((o) => !o)}
+                className="pb-section-title pb-section-title--clickable"
+                style={{ display: "inline-block", fontSize: 24, fontWeight: 600, userSelect: "none" }}
+              >
+                {sec.title}
+              </h2>
+              {descOpen && (
+                <div style={{ marginTop: 12, background: "#f7f9fb", borderRadius: 10, padding: "12px 16px", fontSize: 14, color: "#58595b" }}>
+                  {sec.num === 2 ? PFM_SUMMARY : sec.desc}
+                </div>
+              )}
+            </div>
+            {sec.num === 2 ? (
+              <PfmDetail />
+            ) : (
+              sec.price != null && (
+                <div className="flex items-center gap-2">
+                  <span style={{ fontSize: 14, color: "#6b6d6f" }}>추정주가</span>
+                  <span style={{ fontSize: 17, fontWeight: 600, color: "#5797f7" }}>{won(sec.price)}</span>
+                </div>
+              )
+            )}
+          </section>
+        );
+      })()}
     </div>
   );
 }
