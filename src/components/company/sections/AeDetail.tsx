@@ -29,9 +29,9 @@ function Collapsible({ label, note, children }: { label: string; note?: string; 
   const [open, setOpen] = useState(true);
   return (
     <div>
-      <button onClick={() => setOpen((o) => !o)} className="flex items-center gap-1" style={{ fontSize: 15, fontWeight: 600, color: "#191b1c" }}>
+      <button onClick={() => setOpen((o) => !o)} className="flex items-center gap-1 transition-colors text-[#58595b] hover:text-[#5797f7]" style={{ fontSize: 15, fontWeight: 600 }}>
         {label}
-        <ChevronDown size={16} color="#6b6d6f" style={{ transform: open ? "rotate(180deg)" : "none", transition: "transform .15s" }} />
+        <ChevronDown size={16} style={{ transform: open ? "rotate(180deg)" : "none", transition: "transform .15s" }} />
       </button>
       {note && <p style={{ fontSize: 13, color: "#8c8e90", marginTop: 6 }}>{note}</p>}
       {open && <div style={{ marginTop: 10 }}>{children}</div>}
