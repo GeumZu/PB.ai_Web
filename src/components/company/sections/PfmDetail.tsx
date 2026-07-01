@@ -7,7 +7,7 @@ import {
 import { useState } from "react";
 import { ChevronDown } from "lucide-react";
 import {
-  PFM_CHART, PFM_LINES, PFM_PREMIUM, PFM_CONCEPTS, PFM_FORMULA,
+  PFM_CHART, PFM_LINES, PFM_PREMIUM, PFM_CONCEPTS, PFM_FORMULA, PFM_FORMULA_CALC,
   PFM_VARS, PFM_WEIGHTS, PFM_CALC, PFM_TABLE_NB, PFM_TABLE_OB,
 } from "@/lib/companyData";
 
@@ -147,7 +147,10 @@ export default function PfmDetail() {
             <ChevronDown size={16} style={{ transform: formulaOpen ? "rotate(180deg)" : "none", transition: "transform .15s" }} />
           </button>
           {formulaOpen && (
-            <div style={{ background: "#f7f9fb", borderRadius: 8, padding: "12px 16px", fontSize: 14, color: "#3c3d3f", fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace" }}>{PFM_FORMULA}</div>
+            <div style={{ background: "#f7f9fb", borderRadius: 8, padding: "12px 16px", fontSize: 13.5, color: "#3c3d3f", fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace", overflowX: "auto" }}>
+              <div style={{ fontWeight: 600, color: "#191b1c" }}>{PFM_FORMULA}</div>
+              <div style={{ marginTop: 8, whiteSpace: "pre", lineHeight: 1.7 }}>{PFM_FORMULA_CALC}</div>
+            </div>
           )}
         </div>
 
