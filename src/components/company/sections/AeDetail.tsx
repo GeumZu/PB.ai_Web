@@ -40,6 +40,7 @@ function Collapsible({ label, note, children }: { label: string; note?: string; 
 }
 
 export default function AeDetail() {
+  const [formulaOpen, setFormulaOpen] = useState(false);
   return (
     <div className="flex flex-col" style={{ gap: 24, paddingTop: 8 }}>
       {/* 1. 차트 (실제주가 + P(AE)) */}
@@ -110,14 +111,18 @@ export default function AeDetail() {
 
       {/* 4. 추정주가(P^AE) 계산 과정 */}
       <Card title="추정주가(P^AE) 계산 과정" subtitle={AE_CALC.subtitle}>
-        {/* 산식 (접기/펼치기) */}
-        <div style={{ marginTop: 16 }}>
-          <Collapsible label="초과이익할인법 산식">
-            <div style={{ background: "#f7f9fb", borderRadius: 8, padding: "12px 16px", fontSize: 13.5, color: "#3c3d3f", fontFamily: MONO }}>
-              <div style={{ fontWeight: 600, color: "#191b1c" }}>{AE_CALC.formula}</div>
+        {/* 산식 — 기본 접힘: 라벨+심볼릭 수식만 / 펼치면 수치 전개 (회색 박스가 라벨까지 감쌈, PFM과 동일) */}
+        <div style={{ marginTop: 16, background: "#f7f9fb", borderRadius: 8, padding: "12px 16px" }}>
+          <button onClick={() => setFormulaOpen((o) => !o)} className="flex items-center gap-1 transition-colors text-[#58595b] hover:text-[#5797f7]" style={{ fontSize: 15, fontWeight: 600, marginBottom: 10 }}>
+            초과이익할인법 산식
+            <ChevronDown size={16} style={{ transform: formulaOpen ? "rotate(180deg)" : "none", transition: "transform .15s" }} />
+          </button>
+          <div style={{ fontSize: 13.5, color: "#3c3d3f", fontFamily: MONO }}>
+            <div style={{ fontWeight: 600, color: "#191b1c" }}>{AE_CALC.formula}</div>
+            {formulaOpen && (
               <div style={{ marginTop: 8, whiteSpace: "pre-line", lineHeight: 1.7 }}>{AE_CALC.formulaCalc}</div>
-            </div>
-          </Collapsible>
+            )}
+          </div>
         </div>
 
         {/* 핵심 계산식 + 변수 설명 */}
