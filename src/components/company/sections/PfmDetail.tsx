@@ -68,7 +68,7 @@ function PfmTable({ t }: { t: typeof PFM_TABLE_NB }) {
 }
 
 export default function PfmDetail() {
-  const [formulaOpen, setFormulaOpen] = useState(true);
+  const [formulaOpen, setFormulaOpen] = useState(false);
   return (
     <div className="flex flex-col" style={{ gap: 24, paddingTop: 8 }}>
       {/* 1. PFM 차트 */}
@@ -140,18 +140,18 @@ export default function PfmDetail() {
 
       {/* 4. 추정주가(P^M) 계산 과정 */}
       <Card title="추정주가(P^M) 계산 과정">
-        {/* 산식 (접기/펼치기) */}
-        <div style={{ marginTop: 16 }}>
-          <button onClick={() => setFormulaOpen((o) => !o)} className="flex items-center gap-1 transition-colors text-[#58595b] hover:text-[#5797f7]" style={{ fontSize: 15, fontWeight: 600, marginBottom: 8 }}>
+        {/* 산식 — 기본 접힘: 라벨+심볼릭 수식만 / 펼치면 P(NB)·P(OB) 수치 전개 (회색 박스가 라벨까지 감쌈) */}
+        <div style={{ marginTop: 16, background: "#f7f9fb", borderRadius: 8, padding: "12px 16px" }}>
+          <button onClick={() => setFormulaOpen((o) => !o)} className="flex items-center gap-1 transition-colors text-[#58595b] hover:text-[#5797f7]" style={{ fontSize: 15, fontWeight: 600, marginBottom: 10 }}>
             유사기업이용법(PFM) 산식
             <ChevronDown size={16} style={{ transform: formulaOpen ? "rotate(180deg)" : "none", transition: "transform .15s" }} />
           </button>
-          {formulaOpen && (
-            <div style={{ background: "#f7f9fb", borderRadius: 8, padding: "12px 16px", fontSize: 13.5, color: "#3c3d3f", fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace", overflowX: "auto" }}>
-              <div style={{ fontWeight: 600, color: "#191b1c" }}>{PFM_FORMULA}</div>
+          <div style={{ fontSize: 13.5, color: "#3c3d3f", fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace", overflowX: "auto" }}>
+            <div style={{ fontWeight: 600, color: "#191b1c" }}>{PFM_FORMULA}</div>
+            {formulaOpen && (
               <div style={{ marginTop: 8, whiteSpace: "pre", lineHeight: 1.7 }}>{PFM_FORMULA_CALC}</div>
-            </div>
-          )}
+            )}
+          </div>
         </div>
 
         {/* 변수 설명 + 가중치 */}
