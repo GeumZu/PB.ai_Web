@@ -361,7 +361,7 @@ export const VALUATION_RANGES = {
 // short: 펼친 행 라벨, price: 핸들(추정주가). 스케일은 VALUATION_RANGES.model 공유.
 export const VALUATION_MODELS = [
   { key: "PFM", label: "유사기업 이용법(PFM)", short: "유사기업이용법",   price: 246667 },
-  { key: "RI",  label: "초과이익할인법(RI법)", short: "초과이익할인법",   price: 362667 },
+  { key: "RI",  label: "초과이익할인법(AE)",  short: "초과이익할인법",   price: 362667 },
   { key: "EVA", label: "경제적부가가치(EVA)",  short: "경제적부가가치법", price: 285000 },
   { key: "DCF", label: "현금흐름할인법(DCF)",  short: "현금흐름할인법",   price: 395000 },
 ];
@@ -375,7 +375,7 @@ export interface ValuationSection {
 }
 export const VALUATION_SECTIONS: ValuationSection[] = [
   { num: 2, title: "유사기업 이용법(PFM)", desc: "유사 상장회사의 주가배수(PER·PBR 등)를 이용한 시장접근법으로 추정주가를 산출합니다. 동종업종·기업규모가 유사한 상위 4개 기업의 주가배수 중위수를 적용합니다.", price: 246667 },
-  { num: 3, title: "초과이익할인법(RI법)", desc: "미래 초과이익(RI)을 자기자본비용(r)으로 할인하여 추정주가를 산출합니다. 총주식가치 = 미래 초과이익의 현재가치 + 당기 자기자본.", price: 362667 },
+  { num: 3, title: "초과이익할인법(AE)", desc: "미래 초과이익(AE)을 자기자본비용(r)으로 할인하여 추정주가를 산출합니다. 총주식가치 = 미래 초과이익의 현재가치 + 당기 자기자본.", price: 362667 },
   { num: 4, title: "경제적부가가치(EVA)", desc: "EVA와 가중평균자본비용(WACC)을 이용해 5년 추정합니다. 총기업가치 = 미래 EVA 현재가치 + 투하자본 + 비영업자산.", price: 285000 },
   { num: 5, title: "현금흐름할인법(DCF)", desc: "미래 잉여현금흐름(FCFF)을 WACC로 할인하여 추정합니다(추정기간 5년). 총기업가치 = 미래 FCFF 현재가치 + 비영업자산.", price: 395000 },
   { num: 6, title: "추정오차율분석", desc: "각 모델의 추정주가와 실제주가 간 오차율을 분석하여 평가 신뢰도를 점검합니다.", price: null },
@@ -383,17 +383,23 @@ export const VALUATION_SECTIONS: ValuationSection[] = [
 
 // ── 유사기업 이용법(PFM) 상세 — 아코디언 2번 펼침 (Figma 920:17677) ──
 // 차트: 실제주가 + 추정선 2개(NB/OB)
-export const PFM_CHART = VALUATION_CHART.map((d) => ({
-  date: d.date,
-  actual: d.실제주가,
-  nb: Math.round(d.평균추정주가 * 0.95),
-  ob: Math.round(d.평균추정주가 * 1.05),
-}));
+export const PFM_CHART = VALUATION_CHART.map((d, i, arr) => {
+  const t = Math.min(1, i / (arr.length - 3)); // 마지막 구간은 평탄(plateau)
+  return {
+    date: d.date,
+    actual: d.실제주가,
+    nb: Math.round(302000 + 40000 * t), // 상단 추정선(NB)
+    ob: Math.round(280000 + 36000 * t), // 하단 추정선(OB)
+  };
+});
 export const PFM_LINES = [
-  { key: "actual", name: "실제주가", color: "#eb0d0d" },
-  { key: "nb",     name: "NB",      color: "#5797f7" },
-  { key: "ob",     name: "OB",      color: "#62c6a8" },
+  { key: "actual", name: "실제주가", color: "#eb0d0d" }, // 빨강
+  { key: "nb",     name: "P(NB)",   color: "#f5a623" }, // 주황(상단)
+  { key: "ob",     name: "P(OB)",   color: "#22c55e" }, // 초록(하단)
 ];
+
+// 제목 아래 GPT 요약 설명 바 (LLM 연동 시 실제 텍스트로 교체)
+export const PFM_SUMMARY = "농심의 유사기업 이용법을 돌렸을 때 gpt 넣고 설명";
 
 // 평가 프리미엄 (3개 컬럼) — tone: under=저평가, over=고평가, none=중립
 export const PFM_PREMIUM = [
@@ -411,6 +417,16 @@ export const PFM_CONCEPTS = [
 
 // 추정주가(P^M) 계산 과정
 export const PFM_FORMULA = "P^M = [(PER¹ × X × 1) + (PBR¹ × BV × 2)] / (3 × VOL)";
+// 산식 펼침 시 실제 수치 계산 전개 (P(NB)/P(OB))
+export const PFM_FORMULA_CALC =
+  "P(NB) = [(15 × 4,000 × 1) + (1.8 × 30,000 × 2)] / (3 × 1,000)\n" +
+  "      = [(60,000) + (108,000)] / 3,000\n" +
+  "      = 168,000 / 3,000\n" +
+  "      = 56\n" +
+  "P(OB) = [(18 × 3,500 × 1) + (2.1 × 28,000 × 2)] / (3 × 1,200)\n" +
+  "      = [(63,000) + (117,600)] / 3,600\n" +
+  "      = 180,600 / 3,600\n" +
+  "      = 50.17";
 export const PFM_VARS = [
   { sym: "PER¹", desc: "동종상장기업 PER 중위수" },
   { sym: "X",    desc: "당기순이익(지배기업지분)/영업이익" },
@@ -469,3 +485,101 @@ export const PFM_TABLE_OB = {
   median: { label: "중위수", cells: ["-", "-", "22.14x", "4.46x"] },
   highlight: "농심",
 };
+
+// ── 초과이익할인법(AE) 상세 — 아코디언 3번 펼침 (Figma 956:18475) ──
+export const AE_SUMMARY = "농심의 초과이익할인법(AE)을 돌렸을 때 gpt 넣고 설명";
+// 차트: 실제주가 + 추정선 P(AE)
+export const AE_CHART = VALUATION_CHART.map((d, i, arr) => {
+  const t = Math.min(1, i / (arr.length - 3));
+  return { date: d.date, actual: d.실제주가, ae: Math.round(300000 + 56000 * t) };
+});
+export const AE_LINES = [
+  { key: "actual", name: "실제주가", color: "#eb0d0d" },
+  { key: "ae",     name: "P(AE)",   color: "#5797f7" },
+];
+
+// 평가 프리미엄 (P(AE) / 실제주가)
+export const AE_PREMIUM = [
+  { label: "P(AE)",    value: "490,643원", delta: "-20% 저평가", tone: "under", note: "2024 당기순이익 기준" },
+  { label: "실제 주가", value: "600,000원", delta: "",            tone: "none",  note: "2025.11.24 종가 기준" },
+];
+
+// 핵심 개념 (번호 3개)
+export const AE_CONCEPTS = [
+  { n: 1, title: "초과이익(Abnormal Earnings)", desc: "기업이 자기자본에 대한 정상수익률(자기자본비용)보다 초과하여 벌어들이는 이익입니다. 이는 기업의 경쟁우위나 무형자산 가치를 반영합니다." },
+  { n: 2, title: "자기자본비용(r)", desc: "투자자가 요구하는 최소한의 수익률로, 기업이 정상적으로 창출해야 하는 수익률입니다. CAPM 모형 등을 통해 추정합니다." },
+  { n: 3, title: "할인 및 합산", desc: "미래 각 연도의 초과이익을 현재가치로 할인한 후, 당기 자기자본에 더하여 총주식가치를 산출합니다." },
+];
+
+// 추정주가(P^AE) 계산 과정
+export const AE_CALC = {
+  subtitle: "정상이익을 초과하는 이익을 현재가치로 할인하여 당기 자기자본에 합산",
+  formula: "P^AE = [AE₁/(1+r)¹ + AE₂/(1+r)² + AE₃/(1+r)³ + AE₄/(1+r)⁴ + AE₅/(1+r)⁵ + BV] / VOL",
+  formulaCalc:
+    "= [760/(1.08)¹ + 773/(1.08)² + 771/(1.08)³ + 766/(1.08)⁴ + 746/(1.08)⁵ + 5500]억 / 150백만\n" +
+    "= [704 + 663 + 612 + 563 + 508 + 5,500]억 ÷ 150백만주\n" +
+    "= [3,049 + 5,500]억 ÷ 150백만주\n" +
+    "= 8,549억 ÷ 150백만주",
+  coreFormulas: [
+    { label: "초과이익", code: "AE_t = E_t − BV_(t-1) × r" },
+    { label: "미래 당기순이익", code: "E_t = E_(t−1) × (1 + g)" },
+    { label: "자기자본", code: "BV_t = BV_(t-1) + [E_t × (1−DV)]" },
+  ],
+  vars: [
+    { sym: "P^AE", desc: "초과이익할인법의 추정주가" },
+    { sym: "AE_t", desc: "t년 후 초과이익 (t=1~5)" },
+    { sym: "BV", desc: "당기 자기자본(지배기업지분)" },
+    { sym: "r", desc: "자기자본비용" },
+    { sym: "VOL", desc: "보통주 발행주식수" },
+    { sym: "g", desc: "영구성장률" },
+    { sym: "DV", desc: "배당성향" },
+  ],
+  final: { expr: "(₩3,049억 + ₩5,500억) ÷ 150백만주", value: "₩168" },
+};
+
+// 연도별 초과이익 예측 표
+export const AE_TABLE = {
+  title: "연도별 초과이익 예측 (Projected Earnings)",
+  subtitle: "5개년 초과이익의 현재가치 할인",
+  years: ["2024", "2025", "2026", "2027", "2028"],
+  rows: [
+    { label: "당기순이익", sub: "(E_t)", cells: ["₩1200억", "₩1280억", "₩1350억", "₩1420억", "₩1480억"] },
+    { label: "전기 자기자본", sub: "(BV_t-1)", cells: ["₩1200억", "₩1280억", "₩1350억", "₩1420억", "₩1480억"] },
+    { label: "정상이익", sub: "(BV × r)", cells: ["₩1200억", "₩1280억", "₩1350억", "₩1420억", "₩1480억"] },
+    { label: "초과이익", sub: "(AE_t)", cells: ["₩1200억", "₩1280억", "₩1350억", "₩1420억", "₩1480억"] },
+    { label: "할인계수", sub: "(1+r)^t", cells: ["₩1200억", "₩1280억", "₩1350억", "₩1420억", "₩1480억"] },
+    { label: "현재가치", sub: "(PV)", cells: ["₩1200억", "₩1280억", "₩1350억", "₩1420억", "₩1480억"] },
+  ],
+  sumLabel: "초과이익 현재가치 합계 :",
+  sum: "1200억 + 1280억 + 1350억 + 1420억 + 1480억 = ₩3,049억",
+};
+
+// 투입 변수 결정 (핵심 변수 산출 근거)
+export const AE_INPUTS = [
+  {
+    badge: "r", title: "자기자본비용 (r, Cost of Equity)", value: "8.0%",
+    collapseLabel: "CAPM 모형", note: "자기자본비용 : 자기자본 가치 유지를 위한 최소 투자수익률",
+    formula: "r = R_f + [E(R_m) − R_f] × β_기업",
+    formulaCalc: "= 3.5% + 0.85 × 5.3% = 3.5% + 4.5% =", result: "8.0%",
+    bullets: ["R_f : 무위험이자율", "Rm − Rf : 시장위험프리미엄", "E(R_m) : 시장기대수익률", "β_기업 : 베타계수"],
+    sub: {
+      title: "R_f (무위험이자율)", value: "3.5%",
+      desc: "5년 만기 국고채 1년 평균수익률 (한국은행 시중금리) = 3.5%",
+      tip: "💡 국고채는 국가 신용도를 기반으로 하므로 무위험자산으로 간주됩니다.",
+    },
+  },
+  {
+    badge: "r", title: "자기자본비용의 가중평균(r_avg)", value: "7.9%",
+    collapseLabel: "추정치 보정", note: "자기자본비용의 가중평균 : CAPM으로 구한 r의 3개년 가중평균(실무용 스무딩 값)",
+    formula: "r_avg = (r_{t-2} × 1 + r_{t-1} × 2 + r_{t} × 3) / 6",
+    formulaCalc: "= (8.126% × 1 + 7.319% × 2 + 8.111% × 3) / 6 = 7.850%", result: "7.9%",
+    bullets: ["r_{t-2} : 전전기 자기자본비용", "r_{t-1} : 전기 자기자본비용", "r_{t} : 당기 자기자본비용"],
+  },
+  {
+    badge: "g", title: "영구성장률 (g, Perpetual Growth Rate)", value: "4.0%",
+    collapseLabel: "성장률 산정", note: "영구성장률(g) = (경제성장률 + 매출액증가율) / 2",
+    formula: "g = (경제성장률 + 매출액증가율) / 2",
+    formulaCalc: "= (2% + 6%) / 2 = 8% / 2 =", result: "4.0%",
+    bullets: ["경제성장률 : 한국 명목GDP 성장률", "매출액증가율 = (당기매출액증가율 + 전기매출액증가율) / 2"],
+  },
+];
