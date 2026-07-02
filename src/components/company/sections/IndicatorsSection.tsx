@@ -51,7 +51,7 @@ function Dropdown<T extends string | number>({
       <button
         onClick={() => setOpen((o) => !o)}
         className="flex items-center gap-1"
-        style={{ fontSize: 13, color: "#6b6d6f", border: "1px solid #e0e0e0", borderRadius: 6, padding: "4px 10px", background: "#fff" }}
+        style={{ fontSize: 13, color: "#6b6d6f", background: "#f0f2f4", borderRadius: 10, padding: "6px 12px" }}
       >
         {current?.label} <ChevronDown size={14} />
       </button>
