@@ -75,7 +75,7 @@ export default function PfmDetail() {
       <div>
         <div className="flex justify-end gap-2" style={{ marginBottom: 8 }}>
           {["5년", "연간"].map((f) => (
-            <button key={f} className="flex items-center gap-1" style={{ fontSize: 13, color: "#6b6d6f", border: "1px solid #e0e0e0", borderRadius: 6, padding: "4px 10px" }}>
+            <button key={f} className="flex items-center gap-1" style={{ fontSize: 13, color: "#6b6d6f", background: "#f0f2f4", borderRadius: 10, padding: "6px 12px" }}>
               {f} <ChevronDown size={14} />
             </button>
           ))}

@@ -101,7 +101,7 @@ export default function ValuationSection({ code }: { code: string }) {
           <h2 style={{ fontSize: 24, fontWeight: 600, color: "#191b1c" }}>1. 종합분석</h2>
           <div className="flex gap-2">
             {["5년", "연간"].map((f) => (
-              <button key={f} className="flex items-center gap-1" style={{ fontSize: 13, color: "#6b6d6f", border: "1px solid #e0e0e0", borderRadius: 6, padding: "4px 10px" }}>
+              <button key={f} className="flex items-center gap-1" style={{ fontSize: 13, color: "#6b6d6f", background: "#f0f2f4", borderRadius: 10, padding: "6px 12px" }}>
                 {f} <ChevronDown size={14} />
               </button>
             ))}
