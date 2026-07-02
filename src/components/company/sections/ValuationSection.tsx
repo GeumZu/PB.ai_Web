@@ -9,9 +9,10 @@ import { ChevronDown, ChevronRight } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useValuation } from "@/lib/api/hooks";
 import type { ValuationSection as VSection } from "@/lib/companyData";
-import { PFM_SUMMARY, AE_SUMMARY } from "@/lib/companyData";
+import { PFM_SUMMARY, AE_SUMMARY, EVA_SUMMARY } from "@/lib/companyData";
 import PfmDetail from "./PfmDetail";
 import AeDetail from "./AeDetail";
+import EvaDetail from "./EvaDetail";
 
 const won = (v: number) => `₩${v.toLocaleString()}`;
 
@@ -187,7 +188,7 @@ export default function ValuationSection({ code }: { code: string }) {
               </h2>
               {descOpen && (
                 <div style={{ marginTop: 12, background: "#f7f9fb", borderRadius: 10, padding: "12px 16px", fontSize: 14, color: "#58595b" }}>
-                  {sec.num === 2 ? PFM_SUMMARY : sec.num === 3 ? AE_SUMMARY : sec.desc}
+                  {sec.num === 2 ? PFM_SUMMARY : sec.num === 3 ? AE_SUMMARY : sec.num === 4 ? EVA_SUMMARY : sec.desc}
                 </div>
               )}
             </div>
@@ -195,6 +196,8 @@ export default function ValuationSection({ code }: { code: string }) {
               <PfmDetail />
             ) : sec.num === 3 ? (
               <AeDetail />
+            ) : sec.num === 4 ? (
+              <EvaDetail />
             ) : (
               sec.price != null && (
                 <div className="flex items-center gap-2">

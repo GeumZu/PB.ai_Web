@@ -583,3 +583,101 @@ export const AE_INPUTS = [
     bullets: ["경제성장률 : 한국 명목GDP 성장률", "매출액증가율 = (당기매출액증가율 + 전기매출액증가율) / 2"],
   },
 ];
+
+// ── 경제적부가가치법(EVA) 상세 — 아코디언 4번 (Figma 940:38672) ──
+export const EVA_SUMMARY = "농심의 경제적부가가치법(EVA)을 돌렸을 때 gpt 넣고 설명";
+export const EVA_CHART = VALUATION_CHART.map((d, i, arr) => {
+  const t = Math.min(1, i / (arr.length - 3));
+  return { date: d.date, actual: d.실제주가, eva: Math.round(305000 + 45000 * t) };
+});
+export const EVA_LINES = [
+  { key: "actual", name: "실제주가", color: "#eb0d0d" },
+  { key: "eva",    name: "P(EVA)",  color: "#5797f7" },
+];
+export const EVA_PREMIUM = [
+  { label: "P(EVA)",   value: "490,643원", delta: "-20% 저평가", tone: "under", note: "2024 기준" },
+  { label: "실제 주가", value: "600,000원", delta: "",            tone: "none",  note: "2025.11.24 종가 기준" },
+];
+export const EVA_CONCEPTS = [
+  { n: 1, title: "경제적 부가가치(EVA)", desc: "EVA는 기업이 투하자본에 대한 자본비용을 초과하여 창출하는 초과이익입니다. 단순 회계이익이 아닌 경제적 이익을 측정하여 진정한 가치창출을 평가합니다." },
+  { n: 2, title: "가중평균자본비용(WACC)", desc: "기업이 자금조달을 위해 지불해야 하는 평균 비용입니다. 자기자본비용과 타인자본비용을 가중평균하여 산출하며, EVA 할인율로 사용됩니다." },
+  { n: 3, title: "투자자본(IC)", desc: "기업이 영업활동에 실제로 투입한 자본입니다. 총자산에서 비영업자산과 무이자부채를 차감하여 산출하며, 이 자본에 대한 수익률이 자본비용을 초과해야 가치를 창출합니다." },
+];
+export const EVA_CALC = {
+  formula: "P^E = [EVA₁/(1+w)¹ + EVA₂/(1+w)² + EVA₃/(1+w)³ + EVA₄/(1+w)⁴ + EVA₅/(1+w)⁵ + IC + NA − B] / VOL",
+  formulaCalc: "P^E = [1,500억/(1.08)¹ + 550억/(1.08)² + 600억/(1.08)³ + 650억/(1.08)⁴ + 700억/(1.08)⁵ + 8,000억 + 1,500억 − 2,000억] / 5,780,000",
+  coreFormulas: [
+    { label: "EVA", sub: "세후영업이익에서 투하자본에 대한 자본비용을 차감", code: "EVA = NOPLAT − IC₋₁ × w" },
+    { label: "EVA_t", sub: "t년 후 경제적부가가치(t=1~5)", code: "E_t = E_(t−1) × (1 + g)" },
+    { label: "투자자본 (IC)", sub: "", code: "(자산총계 − 비영업자산) − (부채총계 − 이자지급부채)" },
+  ],
+  vars: [
+    { sym: "P^E", desc: "경제적부가가치법의 추정주가" },
+    { sym: "EVA_t", desc: "t년 후 경제적부가가치(t=1~5)" },
+    { sym: "NOPLAT", desc: "당기 세후 영업이익" },
+    { sym: "w", desc: "가중평균자본비용(wacc)" },
+    { sym: "IC", desc: "당기 투자자본" },
+    { sym: "NA", desc: "당기 비영업자산 장부금액" },
+    { sym: "B", desc: "당기 이자지급부채 장부금액" },
+    { sym: "VOL", desc: "보통주 발행주식수" },
+    { sym: "g", desc: "영구성장률" },
+  ],
+  stats: [
+    { label: "EVA 현재가치", value: "₩2,991억", note: "5년간 합계" },
+    { label: "총 기업가치", value: "₩15,291억", note: "EVA_PV + IC + NA" },
+    { label: "총 주식가치", value: "₩11,491억", note: "기업가치 − 부채" },
+  ],
+  final: { expr: "총주식가치 ÷ 발행주식수 = 11,491억 ÷ 150백만주", value: "₩7,661" },
+};
+export const EVA_CURRENT = {
+  steps: [
+    { n: "①", title: "세후영업이익 (NOPLAT)", rows: [["영업이익", "₩1,500억"], ["× (1 − 법인세율 25.0%)", "× 0.750"]], result: ["세후영업이익", "₩1,125억"] },
+    { n: "②", title: "전기 투자자본 (IC₋₁)", rows: [["자산총계", "₩18,000억"], ["− 비영업자산", "₩2,200억"], ["− 부채총계", "₩9,500억"], ["+ 이자지급부채", "₩3,800억"]], result: ["전기 투자자본", "₩6,200억"] },
+    { n: "③", title: "자본비용 (Capital Charge)", rows: [["전기 투자자본 (IC₋₁)", "₩6,200억"], ["× wacc", "× 7.5%"]], result: ["자본비용", "₩465억"] },
+    { n: "④", title: "당기 EVA", rows: [["세후영업이익 (NOPLAT)", "₩1,125억"], ["− 자본비용", "₩465억"]], result: ["당기 EVA", "₩660억"] },
+  ],
+  interpret: "당기 EVA가 ₩660억으로 양수입니다. 기업이 자본비용을 초과하는 경제적 가치를 창출하고 있습니다.",
+};
+export const EVA_TABLE = {
+  title: "연도별 EVA 및 현재가치 계산",
+  subtitle: "5개년 EVA의 현재가치 할인",
+  years: ["2024", "2025", "2026", "2027", "2028"],
+  rows: [
+    { label: "EVA", sub: "", cells: ["₩1200억", "₩1280억", "₩1350억", "₩1420억", "₩1480억"] },
+    { label: "할인계수", sub: "(1+WACC)^t", cells: ["1.075", "1.156", "1.242", "1.335", "1.436"] },
+    { label: "현재가치", sub: "(PV)", cells: ["₩1200억", "₩1280억", "₩1350억", "₩1420억", "₩1480억"] },
+  ],
+  sumLabel: "EVA 현재가치 합계 :",
+  sum: "1200억 + 1280억 + 1350억 + 1420억 + 1480억 = ₩3,049억",
+};
+export const EVA_ASSUMPTIONS = [
+  { label: "WACC (w)", value: "7.5%" },
+  { label: "성장률 (g)", value: "4.0%" },
+  { label: "유효법인세율", value: "25.0%" },
+  { label: "발행주식수", value: "150백만주" },
+];
+export const EVA_WACC = {
+  badge: "w", title: "가중평균자본비용(w, wacc)", value: "8.48%",
+  collapseLabel: "가중평균자본비용", note: "자기자본비용 : 기업이 자본을 조달할 때 발생하는 전체 자본비용의 가중평균",
+  formula: "w = [r × E/(E+B)] + [K_b × (1−T) × B/(E+B)]",
+  formulaCalc:
+    "= [0.10 × 6000/(6000+2000)] + [0.05 × (1−0.22) × 2000/(6000+2000)]\n" +
+    "= [0.10 × 0.75] + [0.05 × 0.78 × 0.25]\n" +
+    "= 0.075 + 0.00975\n" +
+    "= 0.08475 (8.48%)",
+  bullets: ["r : 자기자본비용(가중)", "K_b : 타인자본비용", "E : 자기자본", "B : 이자지급부채", "T : 유효법인세율"],
+  subs: [
+    { title: "r (자기자본비용의 가중평균)", value: "3.5%", note: "자기자본비용의 가중평균 : CAPM으로 구한 연도별 자기자본비용(r)의 3개년 가중평균(실무용 스무딩 값)", formula: "r_avg = (r_{t-2} × 1 + r_{t-1} × 2 + r_{t} × 3) / 6", formulaCalc: "= (8.126% × 1 + 7.319% × 2 + 8.111% × 3) / 6 = 7.850%", bullets: ["r_{t-2} : 전전기 자기자본비용", "r_{t-1} : 전기 자기자본비용", "r_{t} : 당기 자기자본비용"] },
+    { title: "K_b (타인자본비용, Cost of Debt)", value: "5.3%", note: "K_b = 이자비용 ÷ 평균 이자지급부채 잔액", formula: "", formulaCalc: "", bullets: [] },
+    { title: "E (자기자본)", value: "8.8%", note: "자기자본 : 재무상태표 상 자본 총계", formula: "E = 자산총계 − 부채 총계", formulaCalc: "", bullets: [] },
+    { title: "B (이자지급부채)", value: "0.44", note: "이자지급부채 : 이자를 지급해야 하는 부채의 합계(타인자본)", formula: "", formulaCalc: "", bullets: ["P_(i,t) : i 기업 t년 연평균 수정주가", "R_i : i 기업 수익률", "R_b : 벤치마크(코스피 지수) t기 수익률"] },
+    { title: "T (유효법인세율)", value: "0.44", note: "유효법인세율 : 회사가 실제로 부담하는 실질 세율", formula: "T = 법인세비용 ÷ 법인세비용차감전이익(세전이익)", formulaCalc: "법인세비용차감전이익(세전이익) ≤ 0 인 경우 유효법인세율(T)은 0%", bullets: [] },
+  ],
+};
+export const EVA_GROWTH = {
+  badge: "g", title: "영구성장률 (g, Perpetual Growth Rate)", value: "4.0%",
+  collapseLabel: "성장률 산정", note: "영구성장률(g) = (경제성장률 + 매출액증가율) / 2",
+  formula: "g = (경제성장률 + 매출액증가율) / 2",
+  formulaCalc: "= (2% + 6%) / 2 = 8% / 2 = 4.0%",
+  bullets: ["경제성장률 : 한국 명목GDP 성장률", "매출액증가율 = (당기매출액증가율 + 전기매출액증가율) / 2"],
+};
